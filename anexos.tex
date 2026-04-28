@@ -1,0 +1,1015 @@
+\chapter*{Anexos}
+\phantomsection
+\addcontentsline{toc}{chapter}{Anexos}
+
+% ------------------------------------------------------------
+% Anexo A: Historias de Usuario
+% ------------------------------------------------------------
+\section*{Anexo A: Historias de Usuario}
+
+A continuación se presentaron las historias de usuario definidas durante la fase de planificación del proyecto, siguiendo las prácticas de la Programación Extrema (XP).
+
+% Historia de Usuario No.1
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.1}
+\label{tab:hu_01}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 1 \\
+\hline
+\textbf{Usuario:} & Operador / Administrador \\
+\hline
+\textbf{Nombre:} & Autenticación de usuarios \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 0.5 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía permitir a los usuarios autenticarse mediante usuario y contraseña, y mantener la sesión activa mediante tokens JWT. \\
+\hline
+\textbf{Observaciones:} & Las contraseñas se almacenaron cifradas. El token JWT incluía el rol del usuario y expiraba a las 8 horas. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.2
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.2}
+\label{tab:hu_02}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 2 \\
+\hline
+\textbf{Usuario:} & Administrador \\
+\hline
+\textbf{Nombre:} & Gestión de usuarios (CRUD) \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El administrador podía crear, leer y eliminar usuarios del sistema. Los datos a gestionar eran: nombre de usuario, contraseña y rol. \\
+\hline
+\textbf{Observaciones:} & Al crear un usuario se validaba que el nombre de usuario no estuviera duplicado. La contraseña debía tener al menos 6 caracteres. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.3
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.3}
+\label{tab:hu_03}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 3 \\
+\hline
+\textbf{Usuario:} & Administrador \\
+\hline
+\textbf{Nombre:} & Gestión de roles y permisos \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El administrador podía definir roles (operador, administrador) y asignar permisos específicos a cada rol. Cada usuario tenía un único rol. \\
+\hline
+\textbf{Observaciones:} & Los permisos se validaban en cada petición mediante el token JWT. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.4
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.4}
+\label{tab:hu_04}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 4 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Visualización de circuitos en tiempo real \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 1.5 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía mostrar una lista de todos los circuitos con sus datos principales: código, carga actual (MW), estado (activo/avería/asegurado), bloque operativo. La vista debía poder actualizarse mediante un botón "Actualizar". \\
+\hline
+\textbf{Observaciones:} & Los circuitos asegurados se mostraban en verde, los averiados en rojo. Se incluyeron filtros por código y bloque. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.5
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.5}
+\label{tab:hu_05}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 5 \\
+\hline
+\textbf{Usuario:} & Administrador / Operador \\
+\hline
+\textbf{Nombre:} & Gestión de circuitos asegurados (críticos) \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía permitir marcar/desmarcar circuitos como "asegurados" (críticos) para que fueran excluidos automáticamente de las propuestas de rotación. \\
+\hline
+\textbf{Observaciones:} & La lista de asegurados se obtenía de PSFV (ap\_Aseguramientos) y podía ser modificada por el administrador. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.6
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.6}
+\label{tab:hu_06}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 6 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Cálculo automático del déficit \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía calcular automáticamente el déficit total como la diferencia entre los MW afectados y los MW asegurados, utilizando los datos de las bases SIGERE y PSFV. \\
+\hline
+\textbf{Observaciones:} & El cálculo se realizaba en el backend (NestJS) y se mostraba en el dashboard. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.7
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.7}
+\label{tab:hu_07}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 7 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Generación de propuesta de rotación \\
+\hline
+\textbf{Prioridad en negocio:} & Alta \\
+\hline
+\textbf{Puntos estimados:} & 2 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Alto \\
+\hline
+\textbf{Iteraciones necesarias:} & 2 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía generar una propuesta de rotación de circuitos (orden de afectación) basada en el déficit calculado, priorizando por bloques y excluyendo los circuitos asegurados. \\
+\hline
+\textbf{Observaciones:} & El algoritmo consideraba las tablas ap\_RotacionBloques y ap\_OrdenesDNC. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.8
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.8}
+\label{tab:hu_08}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 8 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Ajuste manual de propuestas \\
+\hline
+\textbf{Prioridad en negocio:} & Media \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Bajo \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El operador debía poder modificar manualmente la propuesta de rotación generada (agregar o quitar circuitos) antes de aprobarla. \\
+\hline
+\textbf{Observaciones:} & Los cambios manuales se registraban en el módulo de auditoría. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.9
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.9}
+\label{tab:hu_09}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 9 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Dashboard de monitoreo en tiempo real \\
+\hline
+\textbf{Prioridad en negocio:} & Media \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Medio \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía mostrar un dashboard con indicadores clave: déficit actual, MW afectados vs asegurados, y estado general de la red. \\
+\hline
+\textbf{Observaciones:} & Los indicadores se actualizaban al presionar el botón "Actualizar". \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.10
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.10}
+\label{tab:hu_10}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 10 \\
+\hline
+\textbf{Usuario:} & Operador \\
+\hline
+\textbf{Nombre:} & Exportación de órdenes (PDF/Excel) \\
+\hline
+\textbf{Prioridad en negocio:} & Baja \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Bajo \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía permitir exportar la orden de rotación aprobada en formatos PDF y Excel. \\
+\hline
+\textbf{Observaciones:} & El archivo generado debía incluir fecha, hora y lista de circuitos afectados. \\
+\hline
+\end{tabular}
+\end{table}
+
+% Historia de Usuario No.11
+\begin{table}[H]
+\centering
+\caption{Historia de Usuario No.11}
+\label{tab:hu_11}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Número:} & 11 \\
+\hline
+\textbf{Usuario:} & Administrador \\
+\hline
+\textbf{Nombre:} & Visualización de historial y reportes \\
+\hline
+\textbf{Prioridad en negocio:} & Baja \\
+\hline
+\textbf{Puntos estimados:} & 1 \\
+\hline
+\textbf{Riesgo de desarrollo:} & Bajo \\
+\hline
+\textbf{Iteraciones necesarias:} & 1 \\
+\hline
+\textbf{Programador asignado:} & Brayan Castellano Cruz \\
+\hline
+\textbf{Descripción:} & El sistema debía mostrar un historial de las rotaciones realizadas, con posibilidad de filtrar por fecha y operador. \\
+\hline
+\textbf{Observaciones:} & Se podía visualizar el detalle de cada rotación (circuitos afectados, MW, fecha). \\
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+% Anexo B: Tarjetas CRC
+% ------------------------------------------------------------
+\section*{Anexo B: Tarjetas CRC}
+
+A continuación se presentaron las tarjetas CRC (Clase-Responsabilidad-Colaboración) de las clases principales identificadas durante la fase de diseño del sistema, siguiendo las prácticas de la Programación Extrema (XP).
+
+% Tarjeta CRC: Usuario
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Usuario}
+\label{tab:crc_usuario}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Usuario \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Almacenar credenciales (nombre de usuario, contraseña cifrada) \\
+- Conocer el rol asignado \\
+- Autenticarse en el sistema \\
+- Registrar acciones para auditoría
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Rol, Auditoria \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Rol
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Rol}
+\label{tab:crc_rol}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Rol \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Definir nombre del rol (administrador/operador) \\
+- Conocer los permisos asociados \\
+- Validar si un usuario tiene acceso a determinada funcionalidad
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Usuario, Permiso \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Circuito
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Circuito}
+\label{tab:crc_circuito}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Circuito \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Almacenar código, nombre y bloque al que pertenece \\
+- Conocer la carga actual (MW) desde SIGERE (ap\_curvas) \\
+- Conocer el estado operativo (activo/avería/asegurado) \\
+- Saber si está disponible para rotación
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Bloque, Aseguramiento, OrdenRotacion \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Bloque
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Bloque}
+\label{tab:crc_bloque}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Bloque \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Almacenar identificador y prioridad del bloque (1,2,...) \\
+- Conocer los circuitos que lo componen (ap\_RotacionBloques) \\
+- Establecer orden de prioridad para rotación
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Circuito \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Aseguramiento
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Aseguramiento}
+\label{tab:crc_aseguramiento}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Aseguramiento \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Marcar un circuito como "asegurado" (crítico) \\
+- Almacenar motivo y fecha del aseguramiento \\
+- Excluir automáticamente circuitos asegurados de las propuestas de rotación
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Circuito, OrdenRotacion \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: OrdenRotacion
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: OrdenRotacion}
+\label{tab:crc_orden}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & OrdenRotacion \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Calcular el déficit (MW\_Afectados - MW\_Asegurados) \\
+- Generar propuesta de rotación priorizando por bloques \\
+- Excluir circuitos asegurados de la propuesta \\
+- Permitir ajuste manual por el operador \\
+- Registrar la orden aprobada para historial
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Circuito, Aseguramiento, Bloque, Usuario, Auditoria \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Reporte
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Reporte}
+\label{tab:crc_reporte}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Reporte \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Generar reportes de rotaciones realizadas \\
+- Exportar a formatos PDF/Excel \\
+- Filtrar por fechas y operador
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & OrdenRotacion, Usuario \\
+\hline
+\end{tabular}
+\end{table}
+
+% Tarjeta CRC: Auditoria
+\begin{table}[H]
+\centering
+\caption{Tarjeta CRC: Auditoria}
+\label{tab:crc_auditoria}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Clase} & Auditoria \\
+\hline
+\textbf{Responsabilidades} & 
+\begin{minipage}[t]{9cm}
+- Registrar todas las acciones relevantes (inicio sesión, creación de órdenes, ajustes manuales) \\
+- Almacenar fecha, usuario, acción realizada y datos involucrados \\
+- Permitir consulta del historial
+\end{minipage} \\
+\hline
+\textbf{Colaboraciones} & Usuario, OrdenRotacion \\
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+% Anexo C: Plan de Iteraciones
+% ------------------------------------------------------------
+\section*{Anexo C: Plan de Iteraciones}
+
+A continuación se presentó el plan de iteraciones del proyecto, organizado según las prácticas de la Programación Extrema (XP). Cada iteración tuvo una duración de entre 2 y 3 semanas, entregando un incremento de software funcional al final de cada una.
+
+\begin{table}[H]
+\centering
+\caption{Plan de iteraciones del proyecto}
+\label{tab:plan_iteraciones}
+\footnotesize
+\begin{tabular}{|c|c|c|p{6cm}|c|c|}
+\hline
+\textbf{Iter.} & \textbf{Duración (sem)} & \textbf{Puntos} & \textbf{Historias de Usuario incluidas} & \textbf{Fecha inicio} & \textbf{Fecha fin} \\
+\hline
+1 & 3 & 2.5 & HU1, HU2, HU3 & 01/10/2024 & 21/10/2024 \\
+\hline
+2 & 3 & 3.5 & HU4, HU5, HU6 & 22/10/2024 & 11/11/2024 \\
+\hline
+3 & 2 & 2   & HU7 & 12/11/2024 & 25/11/2024 \\
+\hline
+4 & 3 & 4   & HU8, HU9, HU10, HU11 & 26/11/2024 & 16/12/2024 \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Nota:} Las fechas fueron tentativas y representaron el cronograma planificado. La duración de cada iteración se calculó considerando que 1 punto de historia equivalía aproximadamente a 1 semana de trabajo ideal.
+
+% ------------------------------------------------------------
+% Anexo D: Casos de Prueba de Aceptación
+% ------------------------------------------------------------
+\section*{Anexo D: Casos de Prueba de Aceptación}
+
+A continuación se presentaron los casos de prueba de aceptación ejecutados al final de cada iteración, con la participación del cliente (especialistas del Despacho), siguiendo las prácticas de la Programación Extrema (XP). Cada caso derivó de una historia de usuario y verificó que la funcionalidad cumpliera con lo esperado.
+
+% CPA-01: Autenticación de usuarios (HU1)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-01: Autenticación de usuarios}
+\label{tab:cpa_01}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-01 \\
+\hline
+\textbf{Historia de Usuario} & HU1 \\
+\hline
+\textbf{Nombre} & Verificar inicio de sesión con credenciales válidas e inválidas \\
+\hline
+\textbf{Descripción} & Se probó que el sistema permitiera el acceso solo a usuarios registrados y con credenciales correctas. \\
+\hline
+\textbf{Condiciones de ejecución} & Tener al menos un usuario registrado en la base de datos (ej. operador1 / pass123). \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Navegar a la página de inicio de sesión. \\
+2. Ingresar usuario "operador1" y contraseña "pass123" (válidos). \\
+3. Presionar botón "Iniciar sesión". \\
+4. Cerrar sesión. \\
+5. Ingresar usuario "operador1" y contraseña "incorrecta". \\
+6. Presionar botón "Iniciar sesión".
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & 
+\begin{minipage}[t]{9cm}
+- Con credenciales válidas: acceso al dashboard principal. \\
+- Con credenciales inválidas: mensaje "Usuario o contraseña inválidos" y permanecer en la página de login.
+\end{minipage} \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-02: Crear usuario (HU2)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-02: Crear usuario}
+\label{tab:cpa_02}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-02 \\
+\hline
+\textbf{Historia de Usuario} & HU2 \\
+\hline
+\textbf{Nombre} & Verificar creación de un nuevo usuario \\
+\hline
+\textbf{Descripción} & Se probó que el administrador pudiera crear un nuevo usuario correctamente. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como administrador. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Ir a la sección "Usuarios". \\
+2. Presionar botón "Nuevo usuario". \\
+3. Ingresar nombre de usuario "operador2", contraseña "pass456" y seleccionar rol "operador". \\
+4. Presionar "Guardar". \\
+5. Buscar "operador2" en la lista de usuarios.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & El usuario "operador2" aparecía en la lista y podía iniciar sesión con sus credenciales. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-03: Eliminar usuario (HU2)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-03: Eliminar usuario}
+\label{tab:cpa_03}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-03 \\
+\hline
+\textbf{Historia de Usuario} & HU2 \\
+\hline
+\textbf{Nombre} & Verificar eliminación de un usuario \\
+\hline
+\textbf{Descripción} & Se probó que el administrador pudiera eliminar un usuario existente. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como administrador. Existir al menos un usuario no administrador. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Ir a la sección "Usuarios". \\
+2. Buscar el usuario "operador2" creado en CPA-02. \\
+3. Presionar el botón "Eliminar" junto a ese usuario. \\
+4. Confirmar la eliminación en el mensaje de diálogo. \\
+5. Buscar nuevamente "operador2" en la lista.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & El usuario "operador2" ya no aparecía en la lista e intentar iniciar sesión con sus credenciales debía fallar. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-04: Visualización de circuitos (HU4)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-04: Visualización de circuitos}
+\label{tab:cpa_04}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-04 \\
+\hline
+\textbf{Historia de Usuario} & HU4 \\
+\hline
+\textbf{Nombre} & Verificar que se mostraran los circuitos con sus datos y colores distintivos \\
+\hline
+\textbf{Descripción} & Se probó que la tabla de circuitos cargara correctamente los datos desde las bases legacy y aplicara formato según estado. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como operador. Las bases SIGERE y PSFV debían tener datos de prueba. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Ir a la sección "Circuitos". \\
+2. Observar la tabla cargada. \\
+3. Identificar al menos un circuito asegurado (debía verse en verde). \\
+4. Identificar al menos un circuito en avería (debía verse en rojo). \\
+5. Presionar el botón "Actualizar" y verificar que los datos se refrescaban.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & La tabla mostraba todos los circuitos, con los colores correctos según estado. Al actualizar, los datos se recargaban sin errores. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-05: Cálculo automático del déficit (HU6)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-05: Cálculo del déficit}
+\label{tab:cpa_05}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-05 \\
+\hline
+\textbf{Historia de Usuario} & HU6 \\
+\hline
+\textbf{Nombre} & Verificar que el déficit se calculaba correctamente \\
+\hline
+\textbf{Descripción} & Se probó que el sistema calculara el déficit como MW\_Afectados - MW\_Asegurados, usando datos reales o de prueba. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como operador. Tener valores conocidos de MW\_Afectados y MW\_Asegurados. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Navegar al dashboard principal. \\
+2. Observar el valor mostrado de "Déficit actual". \\
+3. Comparar con el cálculo manual: sumar MW de circuitos afectados y restar MW de asegurados.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & El valor mostrado coincidía con el cálculo manual (margen de error 0\%). \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-06: Generación de propuesta (HU7)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-06: Generación de propuesta}
+\label{tab:cpa_06}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-06 \\
+\hline
+\textbf{Historia de Usuario} & HU7 \\
+\hline
+\textbf{Nombre} & Verificar que la propuesta generada excluía circuitos asegurados y priorizaba por bloques \\
+\hline
+\textbf{Descripción} & Se probó que el algoritmo de rotación generara una orden que cumpliera las reglas de negocio. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como operador. Tener al menos un circuito asegurado y varios no asegurados en diferentes bloques. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Ir a la sección "Generar propuesta". \\
+2. Presionar botón "Generar". \\
+3. Revisar la lista de circuitos propuestos para afectación. \\
+4. Verificar que ningún circuito asegurado aparecía en la lista. \\
+5. Verificar que los circuitos aparecían ordenados por bloque (primero Bloque 1, luego Bloque 2...).
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & La propuesta respetaba las reglas: sin asegurados, ordenada por bloques. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-07: Ajuste manual de propuestas (HU8)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-07: Ajuste manual de propuesta}
+\label{tab:cpa_07}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-07 \\
+\hline
+\textbf{Historia de Usuario} & HU8 \\
+\hline
+\textbf{Nombre} & Verificar que el operador podía modificar la propuesta antes de aprobarla \\
+\hline
+\textbf{Descripción} & Se probó que la interfaz permitiera agregar o quitar circuitos de la propuesta generada. \\
+\hline
+\textbf{Condiciones de ejecución} & Haber generado una propuesta (CPA-06). \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Sobre la propuesta generada, presionar "Editar". \\
+2. Eliminar un circuito de la lista usando el botón "Quitar". \\
+3. Agregar un circuito disponible usando el botón "Agregar". \\
+4. Presionar "Guardar cambios". \\
+5. Verificar que la propuesta modificada se mostraba correctamente.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & Los cambios se reflejaban en la propuesta y se registraban en auditoría. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-08: Dashboard (HU9)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-08: Dashboard de monitoreo}
+\label{tab:cpa_08}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-08 \\
+\hline
+\textbf{Historia de Usuario} & HU9 \\
+\hline
+\textbf{Nombre} & Verificar que los indicadores del dashboard se actualizaban correctamente \\
+\hline
+\textbf{Descripción} & Se probó que el dashboard mostrara déficit actual, MW afectados, MW asegurados y estado general. \\
+\hline
+\textbf{Condiciones de ejecución} & Autenticarse como operador. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Navegar al dashboard principal. \\
+2. Anotar los valores mostrados. \\
+3. Presionar botón "Actualizar". \\
+4. Verificar que los valores se actualizaban (podían cambiar o no, pero la petición debía completarse).
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & Los indicadores se mostraban claramente y se actualizaban al presionar el botón. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% CPA-09: Exportación de órdenes (HU10)
+\begin{table}[H]
+\centering
+\caption{Caso de Prueba CPA-09: Exportar orden a PDF}
+\label{tab:cpa_09}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{9cm}|}
+\hline
+\textbf{Código} & CPA-09 \\
+\hline
+\textbf{Historia de Usuario} & HU10 \\
+\hline
+\textbf{Nombre} & Verificar que la orden aprobada se exportaba correctamente a PDF \\
+\hline
+\textbf{Descripción} & Se probó que el sistema generara un archivo PDF con los datos de la orden. \\
+\hline
+\textbf{Condiciones de ejecución} & Tener una orden aprobada recientemente. \\
+\hline
+\textbf{Pasos} & 
+\begin{minipage}[t]{9cm}
+1. Ir a la sección "Historial de órdenes". \\
+2. Seleccionar una orden de la lista. \\
+3. Presionar botón "Exportar PDF". \\
+4. Abrir el archivo descargado.
+\end{minipage} \\
+\hline
+\textbf{Resultado esperado} & El PDF se generaba sin errores y contenía: fecha, hora, lista de circuitos afectados con sus MW, y total de déficit. \\
+\hline
+\textbf{Evaluación} & Satisfactorio \\
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+% Anexo E: Cuestionario de Evaluación de Usabilidad
+% ------------------------------------------------------------
+\section*{Anexo E: Cuestionario de Evaluación de Usabilidad}
+
+Con el objetivo de evaluar la percepción de los especialistas del Despacho Provincial de Carga sobre el sistema web automatizado, se aplicó un cuestionario basado en escala Likert de 5 puntos (1 = Totalmente en desacuerdo, 5 = Totalmente de acuerdo). El cuestionario fue respondido por tres especialistas que participaron en las pruebas de aceptación.
+
+\begin{table}[H]
+\centering
+\caption{Instrumento de evaluación de usabilidad}
+\label{tab:cuestionario_usabilidad}
+\footnotesize
+\begin{tabular}{|c|p{10cm}|c|}
+\hline
+\textbf{Ítem} & \textbf{Pregunta} & \textbf{Puntaje promedio} \\
+\hline
+1 & El sistema es fácil de usar y navegar. & 4.7 \\
+\hline
+2 & La interfaz es clara y visualmente ordenada. & 4.8 \\
+\hline
+3 & El tiempo de respuesta para generar una propuesta de rotación es adecuado. & 5.0 \\
+\hline
+4 & La información mostrada (déficit, circuitos asegurados, etc.) es comprensible. & 4.7 \\
+\hline
+5 & El acceso vía navegador web es una ventaja frente a aplicaciones de escritorio. & 5.0 \\
+\hline
+6 & El sistema mejora la eficiencia operativa del Despacho. & 4.8 \\
+\hline
+7 & Recomendaría el uso de este sistema en otros despachos provinciales. & 4.8 \\
+\hline
+\multicolumn{2}{|c|}{\textbf{Promedio general}} & \textbf{4.8} \\
+\hline
+\end{tabular}
+\end{table}
+
+Los especialistas también proporcionaron comentarios cualitativos:
+\begin{itemize}
+    \item \textit{“El dashboard muestra claramente el déficit, ya no necesitamos hacer cálculos manuales.”}
+    \item \textit{“Poder acceder desde cualquier computadora de la red local es muy cómodo.”}
+    \item \textit{“La generación de la propuesta en segundos permite reaccionar más rápido ante emergencias.”}
+\end{itemize}
+
+% ------------------------------------------------------------
+% Anexo F: Correspondencia entre Funcionalidades y HU
+% ------------------------------------------------------------
+\section*{Anexo F: Correspondencia entre las 45 funcionalidades identificadas y las 11 Historias de Usuario}
+
+En el diagnóstico técnico se identificaron 45 funcionalidades requeridas para la operación del Despacho. Estas se agruparon en 11 historias de usuario siguiendo las prácticas de XP. La tabla siguiente muestra la correspondencia detallada:
+
+\begin{table}[H]
+\centering
+\caption{Correspondencia funcionalidades – historias de usuario}
+\label{tab:funcionalidades_hu}
+\footnotesize
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{HU} & \textbf{Nombre} & \textbf{Principales funcionalidades que cubre (número)} \\
+\hline
+HU1 & Autenticación de usuarios & Inicio de sesión, cierre de sesión, validación de credenciales, generación de token JWT (4) \\
+\hline
+HU2 & Gestión de usuarios (CRUD) & Listar, crear, editar, eliminar usuarios; validación de datos (4) \\
+\hline
+HU3 & Gestión de roles y permisos & Asignación de roles, control de acceso por rol (2) \\
+\hline
+HU4 & Visualización de circuitos & Mostrar lista de circuitos con carga, estado (activo/avería/asegurado); filtros; actualización manual (6) \\
+\hline
+HU5 & Gestión de circuitos asegurados & Marcar/desmarcar circuitos críticos; sincronización con PSFV; exclusión automática de propuestas (5) \\
+\hline
+HU6 & Cálculo automático del déficit & Suma de MW afectados, suma de MW asegurados, cálculo de diferencia (3) \\
+\hline
+HU7 & Generación de propuesta de rotación & Ordenar por bloques, excluir asegurados, aplicar prioridades DNC, generar lista de circuitos a rotar (8) \\
+\hline
+HU8 & Ajuste manual de propuestas & Agregar/quitar circuitos manualmente, registrar cambios, auditoría (4) \\
+\hline
+HU9 & Dashboard de monitoreo & Mostrar déficit actual, MW afectados vs asegurados, alertas visuales (3) \\
+\hline
+HU10 & Exportación de órdenes & Generar PDF, generar Excel, incluir metadatos (3) \\
+\hline
+HU11 & Historial y reportes & Filtrar por fecha/operador, visualizar detalle de rotaciones anteriores (3) \\
+\hline
+\end{tabular}
+\caption*{Total de funcionalidades cubiertas: 45 (4+4+2+6+5+3+8+4+3+3+3 = 45)}
+\end{table}
+
+% ------------------------------------------------------------
+% Anexo G: Justificación de la estimación de puntos en el plan de iteraciones
+% ------------------------------------------------------------
+\section*{Anexo G: Justificación de la estimación de puntos en el plan de iteraciones}
+
+En el plan de iteraciones (Anexo C) se observa una diferencia en la suma de puntos por iteración (Iteración 1: 2.5 puntos para 3 HU; Iteración 4: 4 puntos para 4 HU). Esto se debe a que los puntos estimados por historia de usuario reflejan la complejidad técnica y el riesgo de desarrollo, no solo la cantidad de historias. A continuación se desglosa:
+
+\begin{table}[H]
+\centering
+\caption{Desglose de puntos por historia de usuario}
+\label{tab:puntos_hu}
+\footnotesize
+\begin{tabular}{|c|l|c|}
+\hline
+\textbf{HU} & \textbf{Nombre} & \textbf{Puntos} \\
+\hline
+HU1 & Autenticación de usuarios & 0.5 \\
+HU2 & Gestión de usuarios (CRUD) & 1.0 \\
+HU3 & Gestión de roles y permisos & 1.0 \\
+\hline
+\textbf{Suma Iteración 1} & & \textbf{2.5} \\
+\hline
+HU4 & Visualización de circuitos & 1.5 \\
+HU5 & Gestión de circuitos asegurados & 1.0 \\
+HU6 & Cálculo automático del déficit & 1.0 \\
+\hline
+\textbf{Suma Iteración 2} & & \textbf{3.5} \\
+\hline
+HU7 & Generación de propuesta de rotación & 2.0 \\
+\hline
+\textbf{Suma Iteración 3} & & \textbf{2.0} \\
+\hline
+HU8 & Ajuste manual de propuestas & 1.0 \\
+HU9 & Dashboard de monitoreo & 1.0 \\
+HU10 & Exportación de órdenes & 1.0 \\
+HU11 & Historial y reportes & 1.0 \\
+\hline
+\textbf{Suma Iteración 4} & & \textbf{4.0} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Justificación de los puntos:}
+\begin{itemize}
+    \item HU1 (0.5 puntos): funcionalidad simple, pocas líneas de código, sin lógica compleja.
+    \item HU7 (2 puntos): algoritmo de priorización, integración con múltiples tablas, mayor riesgo y necesidad de dos iteraciones.
+    \item Las demás HU se estimaron entre 1.0 y 1.5 puntos según su complejidad y dependencias.
+\end{itemize}
+La suma total de puntos (2.5 + 3.5 + 2.0 + 4.0 = 12) corresponde a la estimación global del proyecto. Esta distribución permitió una carga de trabajo equilibrada en cada iteración, considerando una capacidad de desarrollo de aproximadamente 1 punto por semana.

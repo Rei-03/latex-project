@@ -1,0 +1,78 @@
+\begin{thebibliography}{12}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{American National Standards Institute}(2018)]{ansi2018}
+{American National Standards Institute}.
+\newblock \emph{C37.1-2018 - IEEE Standard for SCADA and Automation Systems}.
+\newblock IEEE Power \& Energy Society, 2018.
+
+\bibitem[Bass et~al.(2013)Bass, Clements, and Kazman]{bass2013}
+Len Bass, Paul Clements, and Rick Kazman.
+\newblock \emph{Software Architecture in Practice}.
+\newblock Addison-Wesley, 3 edition, 2013.
+
+\bibitem[Beck(2000)]{beck2000}
+Kent Beck.
+\newblock \emph{Programming explained: embrace change}.
+\newblock Addison-Wesley Professional, 2000.
+
+\bibitem[Gómez~Expósito et~al.(2016)Gómez~Expósito, Conejo, and
+  Cañizares]{gomez2016}
+Antonio Gómez~Expósito, Antonio~J. Conejo, and Claudio Cañizares.
+\newblock \emph{Electric Energy Systems: Analysis and Operation}.
+\newblock CRC Press, 2016.
+
+\bibitem[{Instituto Superior Politécnico José Antonio
+  Echeverría}(2021)]{cujae2021}
+{Instituto Superior Politécnico José Antonio Echeverría}.
+\newblock Estudio sobre modernización del sistema electroenergético cubano.
+\newblock Technical report, Centro de Investigaciones Energéticas, 2021.
+
+\bibitem[{International Electrotechnical Commission}(2020)]{iec2020}
+{International Electrotechnical Commission}.
+\newblock Iec 61970: Energy management system application program interface
+  (ems-api).
+\newblock \url{https://www.iec.ch}, 2020.
+
+\bibitem[{Ministerio de Energía y Minas de Cuba}(2023)]{ministerio2023}
+{Ministerio de Energía y Minas de Cuba}.
+\newblock Reporte anual de operación del sistema electroenergético nacional.
+\newblock Technical report, Unión Eléctrica de Cuba, 2023.
+
+\bibitem[Pressman and Maxim(2020)]{pressman2020}
+Roger~S. Pressman and Bruce~R. Maxim.
+\newblock \emph{Software Engineering: A Practitioner's Approach}.
+\newblock McGraw-Hill, 9 edition, 2020.
+
+\bibitem[Silberschatz et~al.(2019)Silberschatz, Korth, and
+  Sudarshan]{jones2019}
+Abraham Silberschatz, Henry~F. Korth, and S.~Sudarshan.
+\newblock \emph{Database System Concepts}.
+\newblock McGraw-Hill, 7 edition, 2019.
+\newblock ISBN 978-1260084504.
+
+\bibitem[{Unión Eléctrica de Cuba}(2023)]{union2023}
+{Unión Eléctrica de Cuba}.
+\newblock Manual de procedimientos del despacho nacional de carga.
+\newblock Technical report, Dirección de Operación del Sistema Eléctrico,
+  2023.
+
+\bibitem[Villalba and Pérez(2021)]{villalba2021}
+J.~M. Villalba and A.~Pérez.
+\newblock Integration of legacy systems in modern energy management platforms.
+\newblock \emph{Journal of Energy Informatics}, 4\penalty0 (2):\penalty0
+  45--58, 2021.
+\newblock \doi{10.1016/j.joi.2021.100052}.
+
+\bibitem[Zhou and Li(2023)]{zhou2023}
+Q.~Zhou and H.~Li.
+\newblock Real-time decision support systems for power grid emergencies.
+\newblock \emph{International Journal of Electrical Power \& Energy Systems},
+  145:\penalty0 108632, 2023.
+\newblock \doi{10.1016/j.ijepes.2022.108632}.
+
+\end{thebibliography}

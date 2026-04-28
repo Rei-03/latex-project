@@ -1,0 +1,143 @@
+\chapter{Fundamentos teórico-metodológicos de la automatización del proceso de rotación de circuitos eléctricos ante déficit de generación}
+
+\section{Introducción}
+
+El presente capítulo tiene como objetivo sistematizar los fundamentos teóricos, metodológicos y tecnológicos que sustentan la automatización del proceso de rotación de circuitos eléctricos en el Despacho Provincial de Carga ante escenarios de déficit de generación. Se establece el marco conceptual que permite comprender el objeto de estudio y justificar las decisiones adoptadas para la solución propuesta, que consiste en una plataforma web orientada a agilizar y hacer más confiable la gestión operativa de la red eléctrica.
+
+En primer lugar, se abordan los fundamentos teórico-metodológicos del sistema, incluyendo los referentes internacionales en sistemas de gestión energética (EMS), estándares como el Common Information Model (CIM) de la norma IEC 61970, y las metodologías de desarrollo de software ágil, particularmente la Programación Extrema (XP). A continuación, se analizan los fundamentos de automatización en sistemas de gestión energética, considerando las tendencias globales hacia la virtualización y las arquitecturas web reactivas, así como el marco normativo nacional establecido por el Despacho Nacional de Carga (DNC). Finalmente, se presenta un diagnóstico del proceso actual de rotación de circuitos, identificando las variables críticas, las fuentes de datos dispersas (SIGERE y PSFV) y las limitaciones operativas que justifican la transición hacia una solución automatizada.
+
+En términos estructurales, el capítulo se organiza en tres secciones principales: (1) fundamentos teórico-metodológicos del sistema web; (2) fundamentos de automatización en sistemas de gestión energética; y (3) diagnóstico del proceso actual de rotación de circuitos.
+
+% ------------------------------------------------------------------
+\section{Fundamentos Teórico-Metodológicos}
+
+\subsection{Fundamentos Teóricos del Sistema}
+El diseño del sistema se apoyó en conceptos esenciales de los Sistemas de Gestión de Energía (EMS, por sus siglas en inglés), particularmente en la modelación de cargas y análisis de contingencias~\citep{gomez2016}. A nivel internacional, se consideraron estándares como el Common Information Model (CIM) de la norma IEC 61970~\citep{iec2020}. En el contexto cubano, la lógica de negocio se alineó con las directrices del Despacho Nacional de Carga (DNC)~\citep{union2023} y la interacción con sistemas legacy como SIGERE y PSFV, los cuales proveyeron los datos base a través de infraestructuras de datos persistidas en SQL Server~\citep{villalba2021}.
+
+\subsection{Metodología de investigación}
+Desde el punto de vista científico, esta investigación fue de tipo aplicada y tecnológica, pues partió de un problema real del sector eléctrico y buscó resolverlo mediante el desarrollo de una solución informática.
+
+Se emplearon los siguientes métodos científicos:
+\begin{itemize}
+    \item \textbf{Teóricos:} Análisis-síntesis (para descomponer el proceso manual en variables críticas), modelado (para representar la arquitectura del sistema) y enfoque sistémico (para integrar los componentes del despacho).
+    \item \textbf{Empíricos:} Observación directa del proceso en el Despacho Provincial, entrevistas no estructuradas con especialistas y análisis documental de las bases de datos SIGERE y PSFV.
+\end{itemize}
+La validación de los resultados se realizó mediante la comparación de escenarios históricos (10 casos) entre el método manual y el sistema automatizado, midiendo tiempos de respuesta y precisión de los cálculos.
+
+\subsection{Metodología de desarrollo de software: Programación Extrema (XP)}
+El proceso de desarrollo del sistema web automatizado se guio por los principios y prácticas de la Programación Extrema (eXtreme Programming, XP)~\citep{beck2000}. XP es una metodología ágil que enfatiza la comunicación continua, la simplicidad en el diseño, la retroalimentación frecuente y la adaptación al cambio. Estos valores resultaron esenciales debido a la naturaleza del proyecto: un equipo pequeño de desarrollo (un único programador), requisitos que evolucionaron a partir del diálogo constante con el tutor y los especialistas del Despacho Provincial de Carga, y la necesidad de entregar valor de forma incremental.
+
+La aplicación de XP se adaptó al contexto de desarrollo individual. Una de las prácticas clave de XP es el \textit{pair programming} (programación en pares), que no pudo aplicarse literalmente al contar con un solo desarrollador. Para mitigar esta limitación, se adoptaron las siguientes estrategias:
+\begin{itemize}
+    \item \textbf{Revisiones de código periódicas con el tutor:} Al final de cada iteración, el tutor realizaba una revisión técnica del código, verificando la calidad, la adherencia a los estándares y la correcta implementación de las historias de usuario.
+    \item \textbf{Pruebas de aceptación con el cliente:} Los especialistas del Despacho validaban cada incremento funcional, lo que actuaba como un mecanismo de control externo equivalente a una segunda mirada.
+    \item \textbf{Refactorización continua:} Se mantuvo la práctica de refactorización, apoyada por pruebas unitarias automatizadas (Jest en backend, React Testing Library en frontend), lo que redujo el riesgo de errores.
+\end{itemize}
+
+El resto de prácticas de XP se implementaron sin modificaciones:
+\begin{itemize}
+    \item \textbf{Historias de usuario:} Los requisitos funcionales se capturaron mediante historias de usuario, escritas de forma colaborativa por el equipo de desarrollo y el cliente (tutor y especialistas). Cada historia describía una funcionalidad desde la perspectiva del operador del Despacho, incluyendo criterios de aceptación que posteriormente se utilizaron para las pruebas. Por ejemplo: “Como operador del Despacho, necesito visualizar en tiempo real la lista de circuitos asegurados para excluirlos automáticamente de las propuestas de rotación”.
+    \item \textbf{Diseño simple y tarjetas CRC:} Se emplearon tarjetas CRC (Clase-Responsabilidad-Colaborador) durante las primeras iteraciones, identificando clases principales del dominio (\texttt{Circuito}, \texttt{Aseguramiento}, \texttt{OrdenRotacion}). Se definió una metáfora del sistema: una “fábrica de órdenes de rotación”, donde el frontend (Next.js) actúa como interfaz de supervisión y el backend (NestJS) como motor de procesamiento de reglas de negocio.
+    \item \textbf{Iteraciones cortas e integración continua:} El desarrollo se organizó en iteraciones de una a dos semanas. Al final de cada iteración se entregaba un incremento funcional probado. Se adoptó integración continua: cada cambio se integraba al repositorio Git varias veces al día, ejecutándose pruebas unitarias automáticas.
+    \item \textbf{Pruebas de aceptación con el cliente:} Al finalizar cada iteración, los especialistas validaban las propuestas de rotación generadas por el sistema, comparándolas con resultados manuales históricos. Esto permitió detectar desviaciones tempranas y ajustar prioridades.
+    \item \textbf{Refactorización:} Se mantuvo la refactorización continua, apoyada por pruebas unitarias para evitar regresiones.
+\end{itemize}
+
+La elección de XP se justificó por su alineación con la arquitectura desacoplada adoptada (frontend/backend), facilitando la integración continua y la refactorización. Cada capa podía probarse independientemente, acelerando el desarrollo y reduciendo riesgos.
+
+\subsection{Convergencia de los Fundamentos en la Solución Propuesta}
+La articulación de estos fundamentos permitió transformar un proceso manual en una plataforma web escalable. Mientras los estándares EMS y las directrices del DNC definían las reglas del dominio eléctrico, el uso de un stack tecnológico moderno (JavaScript/TypeScript) permitía una gestión de estado eficiente mediante Hooks y Context API, garantizando que el especialista recibiera información procesada en tiempo real.
+
+Como resultado, la solución integró consistentemente los datos de los sistemas heredados con algoritmos de priorización modernos, asegurando trazabilidad, accesibilidad desde la red local y una reducción drástica en los tiempos de respuesta operativa del Despacho Provincial de Carga.
+
+% ------------------------------------------------------------------
+\section{Fundamentos de Automatización en Sistemas de Gestión Energética}
+
+\subsection{Automatización en Sistemas de Gestión Energética}
+A nivel internacional, la automatización de decisiones operativas en redes eléctricas se sustenta en los principios de los Sistemas de Gestión de Energía (EMS), que integran análisis de estados y optimización de cargas~\citep{gomez2016}. Estos sistemas se apoyan en arquitecturas SCADA para el monitoreo en tiempo real~\citep{ansi2018}. Actualmente, la tendencia global se orienta hacia la virtualización, donde la lógica de control se separa de la interfaz física mediante aplicaciones web reactivas, minimizando tiempos de respuesta y reduciendo la intervención manual.
+
+\subsection{Marco Nacional para la Automatización Operativa}
+En Cuba, las decisiones de balance generación-demanda se rigen por el Despacho Nacional de Carga (DNC)~\citep{union2023}. La dependencia actual de procesos manuales y sistemas legacy como SIGERE y PSFV (basados en SQL Server 2008)~\citep{cujae2021} justifica la implementación de una capa de servicios (backend) que automatice la extracción y procesamiento de estos datos. Los protocolos del Ministerio de Energía y Minas~\citep{ministerio2023} exigen rapidez y precisión; elementos que una Single Page Application (SPA) puede potenciar al ofrecer cálculos instantáneos y visualizaciones dinámicas.
+
+\subsection{Implicaciones de la Automatización en el Diseño del Sistema}
+La decisión de automatizar el proceso de rotación de circuitos impuso requerimientos funcionales y no funcionales que determinaron la arquitectura y tecnologías seleccionadas:
+\begin{itemize}
+    \item \textbf{Integración con sistemas legacy:} Se creó una capa de abstracción en NestJS para encapsular consultas a SQL Server 2008, ofreciendo una API REST uniforme al frontend. Esto unificó tablas críticas como \texttt{MSW\_Aseguramientos} y \texttt{ap\_curvas}.
+    \item \textbf{Procesamiento en tiempo real:} Los algoritmos de priorización se ejecutan en el servidor con alta eficiencia; los resultados se transmiten al cliente en formato JSON. La comunicación asíncrona (Axios) garantiza propuestas de rotación en menos de 3 segundos.
+    \item \textbf{Visualización dinámica y usabilidad:} La interfaz con React y Tailwind CSS ofrece tablas interactivas, filtros y alertas visuales, permitiendo al operador supervisar y ajustar manualmente las propuestas.
+    \item \textbf{Trazabilidad y auditoría:} Se implementó un módulo de auditoría que registra cada acción (fecha, hora, MW afectados, circuitos seleccionados, y en ajustes manuales, el operador).
+    \item \textbf{Escalabilidad y mantenibilidad:} La separación en capas y la refactorización continua (facilitadas por XP) aseguran que el sistema pueda evolucionar sin comprometer la estabilidad.
+\end{itemize}
+
+La convergencia de estos fundamentos permitió automatizar cálculos, generar propuestas consistentes, y hacerlo con la rapidez, precisión y transparencia exigidas por la operación del sistema electroenergético cubano.
+
+% ------------------------------------------------------------------
+\section{Diagnóstico del Proceso Actual de Rotación de Circuitos}
+
+El diagnóstico integral del proceso manual de rotación de circuitos en el Despacho Provincial de Carga identificó limitaciones operativas que justifican la transición hacia una plataforma web automatizada. El análisis se fundamentó en estudios sobre sistemas energéticos \textit{legacy}~\citep{villalba2021}.
+
+\subsection{Variables críticas del proceso}
+La metodología de diagnóstico incluyó la identificación de variables críticas, sistematizadas en la Tabla~\ref{tab:variables_rotacion}: cargas horarias (MW), energía total consumida (MWh), órdenes del DNC, estado operativo (averías, aseguramientos, mantenimientos) y segmentación por bloques operativos.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3.2cm}|p{3.5cm}|p{7.8cm}|}
+\hline
+\textbf{Variable} & \textbf{Fuente de Datos} & \textbf{Descripción} \\
+\hline
+Cargas horarias (MW) & SIGERE: ap\_curvas & Consumo de megavatios por hora para circuito \\
+\hline
+MWh totales por circuito & SIGERE: ap\_mwxHora & Energía acumulada en megavatios-horas \\
+\hline
+Órdenes DNC & SIGERE: ap\_OrdenesDNC & Restricciones y prioridades establecidas por el DNC \\
+\hline
+Circuitos asegurados & PSFV: ap\_Aseguramientos & Circuitos críticos (hospitales, servicios esenciales) \\
+\hline
+Estado operativo & SIGERE: MSM\_Aseguramientos & Circuitos averiados o en mantenimiento programado \\
+\hline
+Bloques operativos & SIGERE: ap\_RotacionBloques & Segmentación de circuitos para la rotación \\
+\hline
+\end{tabular}
+\caption{Variables consideradas en el proceso manual de rotación de circuitos}
+\label{tab:variables_rotacion}
+\end{table}
+
+\subsection{Limitaciones del proceso manual}
+El análisis evidenció que los especialistas consultaban manualmente bases de datos SQL Server 2008 mediante herramientas externas, calculando el déficit con la expresión:
+\[
+\text{Déficit} = \text{MW\_Afectados} - \text{MW\_Asegurados}
+\]
+Esta metodología presentaba alto riesgo de errores humanos y una demora de 30 a 45 minutos por evento.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspecto} & \textbf{Métrica} & \textbf{Impacto} \\ \hline
+Tiempo de respuesta & 30-45 minutos & Respuesta lenta ante emergencias \\ \hline
+Error humano en cálculos & 5-10\% & Decisiones subóptimas \\ \hline
+Inconsistencia entre operadores & Alta & Falta de estandarización \\ \hline
+Capacidad de simulación & Nula & No se podían probar escenarios \\ \hline
+Acceso a datos dispersos & 2 bases + múltiples tablas & Complejidad operativa \\ \hline
+\end{tabular}
+\caption{Tiempos y riesgos del proceso manual identificados}
+\label{tab:problemas_manual}
+\end{table}
+
+Como se resume en la Tabla~\ref{tab:problemas_manual}, el problema científico central radicaba en la ausencia de una plataforma web integrada que automatizara el análisis de estas variables. La subutilización de los datos existentes en SQL Server 2008~\citep{jones2019} limitaba la eficiencia operativa del Despacho Provincial~\citep{ministerio2023}.
+
+La solución implementada con \textbf{Next.js} y \textbf{React} automatiza el cálculo del déficit y proporciona una interfaz gráfica reactiva, transformando el rol del especialista de ejecutor manual a supervisor de propuestas generadas automáticamente por el backend en \textbf{NestJS}.
+
+% ------------------------------------------------------------------
+\section{Conclusiones del capítulo}
+
+\begin{enumerate}
+    \item La sistematización de los fundamentos teórico-metodológicos permitió definir el marco conceptual del sistema web para la rotación de circuitos eléctricos, basado en estándares internacionales (CIM IEC 61970) y en las directrices del Despacho Nacional de Carga cubano. Se adoptó la Programación Extrema (XP) como metodología ágil, adaptando sus prácticas al desarrollo individual mediante revisiones de código con el tutor.
+    
+    \item El análisis de la automatización en sistemas de gestión energética evidenció que las tendencias actuales apuntan hacia la virtualización mediante aplicaciones web reactivas, reduciendo tiempos de respuesta y minimizando la intervención manual. En el contexto nacional, la automatización se justificó por la necesidad de integrar datos de sistemas legacy (SIGERE y PSFV) y cumplir con las exigencias de rapidez y precisión del Ministerio de Energía y Minas.
+    
+    \item El diagnóstico del proceso manual reveló limitaciones críticas: tiempos de respuesta de 30–45 minutos, errores humanos en el 5–10\% de los cálculos, alta inconsistencia entre operadores, nula capacidad de simulación y acceso a datos dispersos. Estas deficiencias confirmaron la pertinencia de la plataforma web automatizada.
+    
+    \item La integración de los tres ejes abordados —fundamentos teórico-metodológicos, automatización energética y diagnóstico empírico— proporciona una base sólida para el diseño e implementación de la solución propuesta, estableciendo coherencia entre el problema científico y las decisiones arquitectónicas.
+\end{enumerate}

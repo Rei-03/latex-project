@@ -1,0 +1,39 @@
+\documentclass{template_pid}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible
+}
+
+\begin{document}
+
+\input{portada}
+\preliminaries
+\input{declaracion_autoria}
+\input{datos_contacto}
+\input{agradecimientos}
+\input{dedicatoria}
+\input{resumen}
+\CompleteIndex
+\input{opinion_tutores}
+\mainmatter
+\input{introduccion}
+\input{capitulo1}
+\input{capitulo2}
+\input{capitulo3}
+\input{conclusiones}
+\input{recomendaciones}
+\input{referencias}
+\input{anexos}
+
+\end{document}

@@ -1,0 +1,22 @@
+\chapter*{Desarrollo}
+\addcontentsline{toc}{chapter}{Desarrollo}
+\label{chap:desarrollo}
+
+% Introducción del capítulo
+\IntroCap{desarrollo}{%
+El presente capítulo aborda la materialización de la propuesta de solución, persiguiendo el objetivo de detallar el proceso de diseño, construcción y validación experimental del \textbf{Sistema de Monitoreo Cloud-Edge} para la línea de producción robótica. Su contenido principal abarca desde la justificación de la arquitectura bajo los requisitos de la \textbf{Integridad de Datos (ALCOA+)} \citep{fda2020} hasta la comprobación de los resultados de desempeño frente al estado inicial. 
+
+El capítulo se estructura en epígrafes que guían al lector a través de las etapas clave del ciclo de ingeniería: el modelado del sistema (Epígrafes iniciales), la definición de la \textbf{Arquitectura Híbrida Cloud-Edge} (su fundamento y diseño) \citep{schmidt2022}, la implementación de cada componente de software libre (desde el simulador C\# hasta la base de datos) y, finalmente, la \textbf{Verificación y Validación} de la hipótesis (Epígrafe final).
+
+Se inicia con la contextualización del sistema ciberfísico en el marco de \textbf{Pharma 4.0} \citep{foidl2021} y se procede a la descripción detallada de la construcción del simulador C\# \citep{uci2025}. Posteriormente, se aborda la configuración de la capa \textit{Edge} con Node-RED para el sellado de tiempo y el cálculo de latencia \citep{kawamura2022}, el almacenamiento inmutable en InfluxDB y la generación de los cuadros de mando en Grafana. El desarrollo busca demostrar la viabilidad de la \textbf{Soberanía Tecnológica} \citep{mincom2023, nunez2007} mediante el uso eficiente de herramientas de código abierto en un entorno industrial de alta exigencia, validando la hipótesis de la reducción de latencia.
+}
+
+% Epígrafes
+\input{epigrafes/epigrafe1}
+\input{epigrafes/epigrafe2}
+\input{epigrafes/epigrafe3}
+\input{epigrafes/epigrafe4}
+\input{epigrafes/epigrafe5}
+\input{epigrafes/epigrafe6}
+\input{epigrafes/epigrafe7}
+\input{epigrafes/epigrafe8}

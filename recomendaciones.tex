@@ -1,0 +1,23 @@
+\chapter*{Recomendaciones}
+\phantomsection
+\addcontentsline{toc}{chapter}{Recomendaciones}
+
+A partir de los resultados obtenidos en la investigación, se proponen las siguientes recomendaciones para la evolución y perfeccionamiento del sistema:
+
+\begin{enumerate}
+    \item \textbf{Migrar la base de datos a SQL Server 2019 o PostgreSQL 15+.} La versión actual (SQL Server 2008) carece de soporte extendido desde 2019. Se recomienda planificar una migración controlada para garantizar seguridad y mantenibilidad a largo plazo.
+
+    \item \textbf{Implementar comunicación en tiempo real con WebSockets (Socket.io).} Sustituir las peticiones HTTP síncronas por WebSockets permitirá actualizar el dashboard instantáneamente ante cambios en el déficit reportado por el DNC, eliminando la necesidad de refresco manual y reduciendo la latencia de reacción.
+
+    \item \textbf{Extender la API de NestJS para consumir pronósticos de demanda y datos meteorológicos.} Incorporar fuentes adicionales (pronósticos meteorológicos, curvas de demanda previstas) mejorará la planificación operativa al permitir simulaciones predictivas.
+
+    \item \textbf{Desarrollar un módulo de simulación de escenarios usando Worker Threads.} Aprovechar la capacidad multihilo de Node.js para ejecutar múltiples escenarios de rotación en paralelo sin bloquear la interfaz, facilitando la evaluación de diferentes estrategias de afectación.
+
+    \item \textbf{Implementar un flujo de integración continua con pruebas automatizadas.} Configurar un pipeline (GitHub Actions o similar) que ejecute pruebas unitarias con Jest (backend) y pruebas de integración con Cypress (frontend) ante cada cambio, asegurando la estabilidad ante futuras actualizaciones.
+
+    \item \textbf{Empaquetar la aplicación como PWA (Progressive Web App).} Dado el diseño responsivo con Tailwind CSS, convertir la SPA en una PWA permitirá su instalación en dispositivos móviles y el acceso sin conexión parcial, facilitando la supervisión desde puntos remotos de la red local.
+
+    \item \textbf{Incorporar un modelo de optimización multiobjetivo basado en machine learning.} Utilizar los datos históricos acumulados por la plataforma para entrenar modelos que automaticen la ponderación de criterios técnicos, económicos y sociales, minimizando el impacto de las rotaciones en servicios sensibles.
+
+    \item \textbf{Adaptar la arquitectura para su despliegue en otros despachos provinciales.} Estandarizar la API y parametrizar las configuraciones (circuitos, bloques, prioridades) para facilitar la réplica del sistema en otras provincias, creando una red interconectada de gestión de déficit a nivel nacional.
+\end{enumerate}
