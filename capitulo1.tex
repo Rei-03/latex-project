@@ -1,4 +1,4 @@
-\chapter{Fundamentos teórico-metodológicos de la automatización del proceso de rotación de circuitos eléctricos ante déficit de generación}
+\chapter{Fundamentos teórico-metodológicos de la automatización del proceso de rotación de circuitos eléctricos ante déficit de\\ generación}
 
 \section{Introducción}
 
@@ -24,7 +24,7 @@ Se emplearon los siguientes métodos científicos:
 \end{itemize}
 La validación de los resultados se realizó mediante la comparación de escenarios históricos (10 casos) entre el método manual y el sistema automatizado, midiendo tiempos de respuesta y precisión de los cálculos.
 
-\subsection{Metodología de desarrollo de software: Programación Extrema (XP)}
+\subsection{Metodología de desarrollo de software: Programación\\ Extrema (XP)}
 El proceso de desarrollo del sistema web automatizado se guio por los principios y prácticas de la Programación Extrema (eXtreme Programming, XP)~\citep{beck2000}. XP es una metodología ágil que enfatiza la comunicación continua, la simplicidad en el diseño, la retroalimentación frecuente y la adaptación al cambio. Estos valores resultaron esenciales debido a la naturaleza del proyecto: un equipo pequeño de desarrollo (un único programador), requisitos que evolucionaron a partir del diálogo constante con el tutor y los especialistas del Despacho Provincial de Carga, y la necesidad de entregar valor de forma incremental.
 
 La aplicación de XP se adaptó al contexto de desarrollo individual. Una de las prácticas clave de XP es el \textit{pair programming} (programación en pares), que no pudo aplicarse literalmente al contar con un solo desarrollador. Para mitigar esta limitación, se adoptaron las siguientes estrategias:
@@ -82,21 +82,21 @@ La metodología de diagnóstico incluyó la identificación de variables crític
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{|p{3.2cm}|p{3.5cm}|p{7.8cm}|}
+\begin{tabular}{|p{3cm}|p{3.2cm}|p{7.5cm}|}
 \hline
 \textbf{Variable} & \textbf{Fuente de Datos} & \textbf{Descripción} \\
 \hline
-Cargas horarias (MW) & SIGERE: ap\_curvas & Consumo de megavatios por hora para circuito \\
+Cargas horarias (MW) & SIGERE: ap\_curvas & Consumo de megavatios por hora para cada circuito \\
 \hline
-MWh totales por circuito & SIGERE: ap\_mwxHora & Energía acumulada en megavatios-horas \\
+MWh totales por circuito & SIGERE: ap\_mwxHora & Energía acumulada en mega\-vatios-horas \\
 \hline
-Órdenes DNC & SIGERE: ap\_OrdenesDNC & Restricciones y prioridades establecidas por el DNC \\
+Órdenes DNC & SIGERE: ap\_OrdenesDNC & Restricciones y prioridades del DNC \\
 \hline
-Circuitos asegurados & PSFV: ap\_Aseguramientos & Circuitos críticos (hospitales, servicios esenciales) \\
+Circuitos asegurados & PSFV: ap\_Aseguramientos & Circuitos críticos (hospitales, servicios) \\
 \hline
-Estado operativo & SIGERE: MSM\_Aseguramientos & Circuitos averiados o en mantenimiento programado \\
+Estado operativo & SIGERE: MSM\_Aseguramientos & Circuitos averiados o en mantenimiento \\
 \hline
-Bloques operativos & SIGERE: ap\_RotacionBloques & Segmentación de circuitos para la rotación \\
+Bloques operativos & SIGERE: ap\_RotacionBloques & Segmentación de circuitos para rotación \\
 \hline
 \end{tabular}
 \caption{Variables consideradas en el proceso manual de rotación de circuitos}
@@ -112,7 +112,8 @@ Esta metodología presentaba alto riesgo de errores humanos y una demora de 30 a
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|c|c|}
+\small
+\begin{tabular}{|p{4cm}|p{3cm}|p{5cm}|}
 \hline
 \textbf{Aspecto} & \textbf{Métrica} & \textbf{Impacto} \\ \hline
 Tiempo de respuesta & 30-45 minutos & Respuesta lenta ante emergencias \\ \hline

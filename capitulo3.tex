@@ -49,8 +49,44 @@ La verificación técnica evaluó la robustez de la \textbf{API en NestJS} y la 
     \item \textbf{Pruebas de Integración con el Backend:} Validaron la capacidad del servidor para establecer conexiones estables con SQL Server 2008. Las peticiones a las tablas \texttt{MSW\_Aseguramientos} y \texttt{ap\_Aseguramientos} se ejecutaron correctamente. Los tiempos de respuesta de la API oscilaron entre 40 y 60 milisegundos, óptimos para la red local del Despacho.
     \item \textbf{Verificación del Algoritmo del Déficit:} Se evaluó la lógica implementada en NestJS mediante $\text{Déficit} = \text{MW\_Afectados} - \text{MW\_Asegurados}$. Se probaron diez escenarios históricos, obteniendo coincidencia del 100\% con los cálculos manuales de los especialistas. Esto confirmó que el traslado de la lógica al servidor eliminó ambigüedades~\citep{gomez2016}.
     \item \textbf{Pruebas de Interfaz Reactiva:} Se evaluó el comportamiento de los componentes de React (tablas dinámicas, formularios CRUD). Mediante herramientas de desarrollo del navegador se verificó que el estado de la aplicación (\textbf{Context API}) se actualizara correctamente tras cada operación, garantizando consistencia visual y de datos.
-    \item
 \end{itemize}
+
+\subsubsection{Pruebas unitarias automatizadas}
+
+Además de las pruebas de integración, se implementaron pruebas unitarias utilizando el framework \textbf{Jest} para validar la lógica de negocio del microservicio de autenticación (\texttt{auth-ms}) de forma aislada, simulando las dependencias externas (repositorio de usuarios, servicio JWT y cliente Redis) mediante \textit{mocks}. Este enfoque garantiza que las pruebas sean rápidas, reproducibles y no afecten los datos reales del sistema.
+
+A continuación se muestra un fragmento representativo de la prueba correspondiente al inicio de sesión exitoso:
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{img/inicio_sesion.png}
+\captionof{figure}{Prueba de login exitoso en AuthService}
+\label{fig:login-prueba}
+\end{center}
+
+La ejecución completa de las pruebas unitarias del módulo \texttt{auth-ms} arrojó los siguientes resultados:
+
+\begin{table}[H]
+\centering
+\caption{Resultados de las pruebas unitarias en el microservicio de autenticación}
+\label{tab:test-results-auth}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Suite} & \textbf{Pruebas} & \textbf{Pasadas} & \textbf{Fallidas} & \textbf{Tiempo} \\ \hline
+AuthService & 14 & 14 & 0 & 10.4 s \\ \hline
+\end{tabular}
+\end{table}
+
+Todas las pruebas se ejecutaron exitosamente, validando la correcta implementación de los métodos de registro, login, logout, verificación de token y renovación de token.
+
+De manera análoga, en el frontend se implementaron pruebas para el contexto de autenticación usando React Testing Library. El siguiente fragmento verifica que al hacer clic en el botón de login, el estado del contexto se actualice correctamente:
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{img/auth_context.png}
+\captionof{figure}{Prueba de login en AuthContext}
+\label{fig:auth-context-prueba}
+\end{center}
+
+La suite completa de pruebas del contexto de autenticación incluyó 15 casos, todos exitosos, cubriendo logout, persistencia en localStorage, validación de roles (isAdmin) y manejo de errores. El resto de las suites de prueba del backend (circuitos, rotaciones, usuarios) y del frontend (componentes React, utilidades) también superaron el 100\% de las pruebas.
 
 
 

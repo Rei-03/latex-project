@@ -51,6 +51,13 @@ El núcleo algorítmico reside en el servidor con \textbf{NestJS}. Implementa el
 \[
 \text{Déficit} = \sum \text{MW\_Afectados} - \sum \text{MW\_Asegurados}
 \]
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{img/algoritmo_rotacion_min.png}
+\captionof{figure}{Algoritmo minimalista de rotación de circuitos}
+\label{fig:algoritmo-rotacion}
+\end{center}
+
 El backend aplica algoritmos de priorización inteligente, excluyendo automáticamente circuitos críticos o bajo mantenimiento, y expone una \textbf{API REST} que procesa solicitudes del cliente, eliminando la carga de cálculo en el navegador~\citep{zhou2023}.
 
 \subsection{Capa de Acceso a Datos (Persistencia)}
