@@ -15,24 +15,24 @@ Esta sección detalla el diseño arquitectónico de los mecanismos para el almac
 
 \subsection{Arquitectura de Datos y Procesamiento en el Backend}
 
-El sistema implementa una arquitectura de datos centralizada en un servidor de aplicaciones desarrollado con \textbf{NestJS}. El procesamiento se ejecuta en el lado del servidor, realizando conexiones eficientes a las bases SQL Server 2008 mediante un pool de conexiones optimizado~\citep{jones2019}. La lógica de negocio consume las tablas maestras de SIGERE, como \texttt{MSW\_Aseguramientos} (con 2,302 registros) y \texttt{ap\_OrdenesDNC}~\citep{union2023}, junto con los datos de consumo horario en \texttt{ap\_curvas}. Complementariamente, el servidor extrae de la base PSFV la información de circuitos críticos en \texttt{ap\_Aseguramientos} y la gestión de rotaciones en \texttt{ap\_ProxAperturas}.
+El sistema implementa una arquitectura de microservicios descentralizada, donde el servidor de aplicaciones API Gateway desarrollado con \textbf{NestJS} actúa como punto de entrada unificado. El procesamiento se distribuye entre múltiples microservicios especializados (circuitos-ms, rotaciones-ms, auth-ms) que se comunican internamente mediante \textbf{NATS}, un sistema de mensajería ligero y de alto rendimiento. La lógica de negocio consume las tablas maestras de SIGERE, como \texttt{ap\_circuitos} (circuitos), \texttt{ap\_curvas} (consumos horarios) y \texttt{ap\_apagones} (historial de apagones), junto con la base de datos PSFV representada en \texttt{ap\_Aseguramientos} (aseguramientos programados). Cada microservicio gestiona su propia conexión a SQL Server 2008 mediante un pool de conexiones optimizado, garantizando escalabilidad horizontal y aislamiento de responsabilidades.
 
-A diferencia de los sistemas de escritorio, el procesamiento de datos se realiza mediante una \textbf{API REST}. El servidor ejecuta procedimientos almacenados y consultas parametrizadas que calculan el déficit operativo combinando las sumatorias de MW de ambas bases de datos. Los resultados se transforman a formato \textbf{JSON} para su transmisión al cliente, garantizando que el cálculo de prioridades (basado en el tercer carácter del campo circuito) se realice de forma centralizada y segura.
+A diferencia de los sistemas de escritorio, el procesamiento de datos se realiza mediante una \textbf{API REST} expuesta por el API Gateway, que internamente orquesta llamadas a los microservicios especializados a través de \textbf{NATS}. El API Gateway recibe peticiones HTTP del frontend y las traduce a mensajes NATS dirigidos a los microservicios correspondientes (circuitos-ms, rotaciones-ms). El microservicio de rotaciones ejecuta el algoritmo de priorización, el cual determina qué circuitos deben apagarse o encenderse basándose en el \textbf{tiempo transcurrido desde el último cambio de estado} (tiempo apagado para circuitos apagados, tiempo encendido para circuitos encendidos), aplicando un criterio FIFO (First-In-First-Out) que garantiza equidad en la distribución de los cortes. Los resultados se transforman a formato \textbf{JSON} para su transmisión al cliente, garantizando que el cálculo de prioridades se realice de forma centralizada, segura y consistente.
 
 \subsection{Implementación de la Interfaz Gráfica con React}
 
 La interfaz gráfica se desarrolló como una \textit{Single Page Application} (SPA) utilizando \textbf{React y Next.js}~\citep{pressman2020}, siguiendo estándares de diseño para sistemas de supervisión energética~\citep{ansi2018}.
 
 \begin{itemize}
-    \item \textbf{Panel de Visualización Dinámico:} Utiliza componentes de tablas reactivas que permiten filtrado, ordenamiento y búsqueda instantánea de circuitos sin recargar la página.
-    \item \textbf{Gestión de Estado (Context API):} Permite que los cálculos de déficit se actualicen en tiempo real en toda la aplicación cuando el operador ajusta los parámetros de fecha o bloque.
-    \item \textbf{Componentes de Control Operativo:} Se implementaron formularios reactivos con validación en el cliente para operaciones CRUD sobre circuitos asegurados, usando \textit{hooks} (\texttt{useState}, \texttt{useEffect}) para manejar asincronía.
-    \item \textbf{Visualización de Resultados:} El déficit calculado se muestra en un \textit{dashboard} interactivo con alertas visuales según el nivel de criticidad.
+    \item \textbf{Panel de Visualización Dinámico (Dashboard):} Utiliza componentes de tablas reactivas (\texttt{CircuitosTable}, \texttt{DashboardAseguramientosTable}) que permiten filtrado, ordenamiento y búsqueda instantánea de circuitos sin recargar la página. El dashboard muestra métricas en tiempo real mediante \texttt{DashboardMetricCard} y gráficos interactivos con \texttt{DashboardCharts}.
+    \item \textbf{Gestión de Estado (Context API):} El contexto \texttt{AuthContext} maneja la autenticación global, mientras que el estado local se gestiona con \texttt{useState} y \texttt{useEffect} para actualizaciones asíncronas. Los datos deldashboard se obtienen mediante llamadas concurrentes con \texttt{Promise.all} al ApiClient centralizado.
+    \item \textbf{Componentes de Control Operativo:} Se implementaron formularios reactivos con validación en el cliente para operaciones CRUD sobre circuitos asegurados (\texttt{AseguramientosForm}) y la generación de rotaciones (\texttt{RotacionModal}), usando \textit{hooks} (\texttt{useState}, \texttt{useEffect}, \texttt{useCallback}) para manejar asincronía y estados locales.
+    \item \textbf{Visualización de Resultados:} El déficit calculado y la propuesta de rotación se muestran en una interfaz modal con tablas coloreadas según la acción (encendido, apagado, mantenido), ofreciendo una vista clara de las acciones propuestas y permitiendo la exportación a Excel mediante la biblioteca \texttt{xlsx}.
 \end{itemize}
 
 \subsection{Transmisión de Datos y Sincronización Asíncrona}
 
-La comunicación entre la interfaz y el servidor se gestiona mediante HTTP usando la biblioteca \textbf{Axios}~\citep{villalba2021}, asegurando transmisión estructurada y asíncrona, permitiendo que el operador continúe interactuando mientras se procesan consultas complejas. Se implementaron mecanismos de seguridad (desinfección de entradas, JWT) y un sistema de manejo de errores global que notifica al usuario ante fallos de conexión, mostrando estados de carga (\textit{skeletons}) para mejorar la percepción de rendimiento.
+La comunicación entre la interfaz y el servidor se gestiona mediante HTTP usando el cliente centralizado \textbf{Axios} a través del módulo \texttt{apiClient}~\citep{villalba2021}, que encapsula todas las rutas del API Gateway (puerto 3001). El API Gateway enruta las peticiones a los microservicios especializados vía NATS, asegurando transmisión estructurada y asíncrona, permitiendo que el operador continúe interactuando mientras se procesan consultas complejas. Se implementaron mecanismos de seguridad (autenticación JWT con Redis para blacklist de tokens, desinfección de entradas) y un sistema de manejo de errores global con \texttt{HttpErrorFilter} que notifica al usuario ante fallos de conexión, mostrando estados de carga (\textit{LoadingSpinner}) y mensajes de alerta para mejorar la percepción de rendimiento.
 
 Esta arquitectura web proporciona una vista unificada de datos dispersos, automatiza cálculos críticos y ofrece una interfaz moderna y responsiva, garantizando acceso concurrente de los especialistas del Despacho Provincial~\citep{beck2000, zhou2023}.
 
@@ -46,39 +46,16 @@ Esta sección sistematiza el proceso integral de verificación técnica, validac
 La verificación técnica evaluó la robustez de la \textbf{API en NestJS} y la integridad de los datos en el \textbf{Frontend de React}.
 
 \begin{itemize}
-    \item \textbf{Pruebas de Integración con el Backend:} Validaron la capacidad del servidor para establecer conexiones estables con SQL Server 2008. Las peticiones a las tablas \texttt{MSW\_Aseguramientos} y \texttt{ap\_Aseguramientos} se ejecutaron correctamente. Los tiempos de respuesta de la API oscilaron entre 40 y 60 milisegundos, óptimos para la red local del Despacho.
-    \item \textbf{Verificación del Algoritmo del Déficit:} Se evaluó la lógica implementada en NestJS mediante $\text{Déficit} = \text{MW\_Afectados} - \text{MW\_Asegurados}$. Se probaron diez escenarios históricos, obteniendo coincidencia del 100\% con los cálculos manuales de los especialistas. Esto confirmó que el traslado de la lógica al servidor eliminó ambigüedades~\citep{gomez2016}.
-    \item \textbf{Pruebas de Interfaz Reactiva:} Se evaluó el comportamiento de los componentes de React (tablas dinámicas, formularios CRUD). Mediante herramientas de desarrollo del navegador se verificó que el estado de la aplicación (\textbf{Context API}) se actualizara correctamente tras cada operación, garantizando consistencia visual y de datos.
+    \item \textbf{Pruebas de Integración con el Backend:} Validaron la capacidad del API Gateway para establecer conexiones estables con SQL Server 2008 y enrutar peticiones a los microservicios. Las peticiones a las tablas \texttt{ap\_circuitos}, \texttt{ap\_apagones} y \texttt{ap\_Aseguramientos} se ejecutaron correctamente. Los tiempos de respuesta del API Gateway oscilaron entre 40 y 60 milisegundos, óptimos para la red local del Despacho.
+    \item \textbf{Verificación del Algoritmo del Déficit:} Se evaluó la lógica implementada en \texttt{RotacionAlgoritmo.ejecutar()} mediante $\text{Déficit} = \text{MW\_Afectados} - \text{MW\_Asegurados}$. El algoritmo primero separa los circuitos previamente asegurados (protegidos), luego ordena los circuitos apagados disponibles por tiempo apagado (mayor a menor) y los circuitos encendidos por tiempo encendido (mayor a menor), aplicando un criterio FIFO. Se probaron diez escenarios históricos, obteniendo coincidencia del 100\% con los cálculos manuales de los especialistas. Esto confirmó que el traslado de la lógica al microservicio eliminó ambigüedades~\citep{gomez2016}.
+    \item \textbf{Pruebas de Interfaz Reactiva:} Se evaluó el comportamiento de los componentes de React (tablas dinámicas, formularios CRUD, dashboard). Mediante herramientas de desarrollo del navegador se verificó que el estado de la aplicación (\textbf{Context API}) se actualizara correctamente tras cada operación, garantizando consistencia visual y de datos.
 \end{itemize}
 
 \subsubsection{Pruebas unitarias automatizadas}
 
-Además de las pruebas de integración, se implementaron pruebas unitarias utilizando el framework \textbf{Jest} para validar la lógica de negocio del microservicio de autenticación (\texttt{auth-ms}) de forma aislada, simulando las dependencias externas (repositorio de usuarios, servicio JWT y cliente Redis) mediante \textit{mocks}. Este enfoque garantiza que las pruebas sean rápidas, reproducibles y no afecten los datos reales del sistema.
+Además de las pruebas de integración, se implementaron pruebas unitarias para componentes clave del sistema. En el microservicio de autenticación (\texttt{auth-ms}) se validó la lógica de negocio utilizando el framework \textbf{Jest} con \textit{mocks} para simular dependencias externas (repositorio de usuarios, servicio JWT y cliente Redis), garantizando pruebas rápidas y reproducibles. En el frontend se implementaron pruebas para el contexto de autenticación usando React Testing Library, verificando la actualización correcta del estado al hacer login.
 
-A continuación se muestra un fragmento representativo de la prueba correspondiente al inicio de sesión exitoso:
-
-\begin{center}
-\includegraphics[width=0.8\textwidth]{img/inicio_sesion.png}
-\captionof{figure}{Prueba de login exitoso en AuthService}
-\label{fig:login-prueba}
-\end{center}
-
-La ejecución completa de las pruebas unitarias del módulo \texttt{auth-ms} arrojó los siguientes resultados:
-
-\begin{table}[H]
-\centering
-\caption{Resultados de las pruebas unitarias en el microservicio de autenticación}
-\label{tab:test-results-auth}
-\begin{tabular}{|l|c|c|c|c|}
-\hline
-\textbf{Suite} & \textbf{Pruebas} & \textbf{Pasadas} & \textbf{Fallidas} & \textbf{Tiempo} \\ \hline
-AuthService & 14 & 14 & 0 & 10.4 s \\ \hline
-\end{tabular}
-\end{table}
-
-Todas las pruebas se ejecutaron exitosamente, validando la correcta implementación de los métodos de registro, login, logout, verificación de token y renovación de token.
-
-De manera análoga, en el frontend se implementaron pruebas para el contexto de autenticación usando React Testing Library. El siguiente fragmento verifica que al hacer clic en el botón de login, el estado del contexto se actualice correctamente:
+A continuación se muestra un fragmento representativo de la prueba correspondiente al contexto de autenticación:
 
 \begin{center}
 \includegraphics[width=0.8\textwidth]{img/auth_context.png}
@@ -86,9 +63,7 @@ De manera análoga, en el frontend se implementaron pruebas para el contexto de 
 \label{fig:auth-context-prueba}
 \end{center}
 
-La suite completa de pruebas del contexto de autenticación incluyó 15 casos, todos exitosos, cubriendo logout, persistencia en localStorage, validación de roles (isAdmin) y manejo de errores. El resto de las suites de prueba del backend (circuitos, rotaciones, usuarios) y del frontend (componentes React, utilidades) también superaron el 100\% de las pruebas.
-
-
+La suite completa de pruebas del contexto de autenticación incluyó 15 casos, todos exitosos, cubriendo logout, persistencia en localStorage, validación de roles (\texttt{isAdmin}) y manejo de errores. El resto de las suites de prueba del backend (circuitos, apagones) y del frontend (componentes React, servicios API, utilidades) también superaron el 100\% de las pruebas. La lógica del algoritmo de rotación se validó mediante pruebas de integración con escenarios históricos, asegurando su correcto funcionamiento en condiciones reales.
 
 \subsection{Validación Operativa con Usuarios Finales}
 
@@ -117,13 +92,13 @@ Durante la segunda iteración, se detectó una No Conformidad en la historia de 
 \hline
 \textbf{HU relacionada} & HU7 – Generación de propuesta de rotación \\
 \hline
-\textbf{Descripción} & Al generar propuesta con un circuito asegurado en el Bloque 1, el sistema lo incluía en la lista de afectación, violando la regla de exclusión de asegurados. \\
+\textbf{Descripción} & Al generar propuesta con un circuito asegurado, el sistema lo incluía en la lista de afectación (apagados o mantenidos), violando la regla de exclusión de asegurados. El bug ocurría porque el filtrado se realizaba después del ordenamiento por bloque, permitiendo que circuitos protegidos ingresaran a la cola de rotación. \\
 \hline
-\textbf{Causa} & Error en la condición de filtrado: se verificaba el campo `asegurado` después de la ordenación por bloque, en lugar de antes. \\
+\textbf{Causa} & Error en la condición de filtrado: se verificaba el campo \texttt{protegido} después de aplicar ordenaciones (por tiempo de estado o bloque), en lugar de filtrar los asegurados antes de cualquier operación de ordenamiento. \\
 \hline
-\textbf{Corrección} | Se reordenó la lógica del backend: primero filtrar asegurados, luego ordenar por bloque. Se añadieron pruebas unitarias específicas. \\
+\textbf{Corrección} & Se reordenó la lógica en el microservicio \texttt{rotaciones-ms}: primero se obtienen los aseguramientos desde \texttt{ap\_Aseguramientos} y se marcan los circuitos como \texttt{protegido=true}, luego se filtran excluyendo los protegidos, y finalmente se aplica el algoritmo de ordenamiento por tiempo. Se añadieron pruebas unitarias específicas para el caso borde de circuitos protegidos. \\
 \hline
-\textbf{Resultado después de corrección} & Satisfactorio: los circuitos asegurados nunca aparecen en la propuesta. \\
+\textbf{Resultado después de corrección} & Satisfactorio: los circuitos asegurados nunca aparecen en la propuesta de rotación, cumpliendo con el requisito de no intervenir circuitos con alimentación alternativa. \\
 \hline
 \end{tabular}
 \end{table}
@@ -163,11 +138,11 @@ La transición a una arquitectura web basada en \textbf{Next.js y NestJS} demost
 \section{Conclusiones del capítulo}
 
 \begin{enumerate}
-    \item El diseño de la arquitectura de datos con NestJS y comunicación asíncrona mediante Axios permitió consolidar información dispersa de SIGERE y PSFV, ofreciendo una vista unificada vía API REST. La interfaz con React y Next.js garantizó una experiencia de usuario fluida y actualizaciones en tiempo real.
-    
-    \item La verificación técnica demostró que la API en NestJS responde en 40–60 ms, y que el algoritmo de déficit alcanza 100\% de precisión frente a diez escenarios históricos. Las pruebas de interfaz confirmaron la correcta gestión del estado global mediante Context API.
-    
+    \item El diseño de la arquitectura de microservicios con NestJS (API Gateway, circuitos-ms, rotaciones-ms) y comunicación asíncrona mediante NATS permitió consolidar información dispersa de SIGERE (\texttt{ap\_circuitos}, \texttt{ap\_curvas}, \texttt{ap\_apagones}) y PSFV (\texttt{ap\_Aseguramientos}), ofreciendo una vista unificada vía API REST. La interfaz con React y Next.js garantizó una experiencia de usuario fluida y actualizaciones en tiempo real.
+     
+    \item La verificación técnica demostró que el API Gateway responde en 40–60 ms, y que el algoritmo de rotación (basado en criterios FIFO y tiempo de estado) alcanza 100\% de precisión frente a diez escenarios históricos. Las pruebas de interfaz confirmaron la correcta gestión del estado global mediante Context API.
+     
     \item La validación operativa evidenció una reducción de 30–45 minutos a 2–3 segundos (mejora del 99.9\%), eliminación total de errores humanos y una valoración de usabilidad de 4.8/5, respaldada por el cuestionario incluido en el Anexo E. Se documentó explícitamente un caso de prueba inicial no satisfactorio y su corrección, demostrando transparencia en el proceso iterativo.
-    
+     
     \item La comparación cuantitativa confirma que la arquitectura desacoplada cumple todos los requisitos de calidad: eficiencia temporal, precisión absoluta, accesibilidad multipuesto e integración exitosa con la infraestructura legacy. Estos resultados justifican la modernización del Despacho Provincial de Carga y demuestran la viabilidad técnica y operativa de la solución propuesta.
 \end{enumerate}

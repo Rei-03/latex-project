@@ -12,7 +12,9 @@ En términos estructurales, el capítulo se organiza en tres secciones principal
 \section{Fundamentos Teórico-Metodológicos}
 
 \subsection{Fundamentos Teóricos del Sistema}
-El diseño del sistema se apoyó en conceptos esenciales de los Sistemas de Gestión de Energía (EMS, por sus siglas en inglés), particularmente en la modelación de cargas y análisis de contingencias~\citep{gomez2016}. A nivel internacional, se consideraron estándares como el Common Information Model (CIM) de la norma IEC 61970~\citep{iec2020}. En el contexto cubano, la lógica de negocio se alineó con las directrices del Despacho Nacional de Carga (DNC)~\citep{union2023} y la interacción con sistemas legacy como SIGERE y PSFV, los cuales proveyeron los datos base a través de infraestructuras de datos persistidas en SQL Server~\citep{villalba2021}.
+El diseño del sistema se apoyó en conceptos esenciales de los Sistemas de Gestión de Energía (EMS, por sus siglas en inglés), particularmente en la modelación de cargas y análisis de contingencias~\citep{gomez2016}. A nivel internacional, se consideraron estándares como el Common Information Model (CIM) de la norma IEC 61970~\citep{iec2020}. En el contexto cubano, la lógica de negocio se alineó con las directrices del Despacho Nacional de Carga (DNC)~\citep{union2023} y la interacción con sistemas legacy como SIGERE y PSFV, los cuales proveyeron los datos base a través de infraestructuras de datos persistidas en SQL Server 2008~\citep{villalba2021}.
+
+Desde el punto de vista arquitectónico, la solución adopta un \textbf{patrón de microservicios} organizado en tres capas: \textbf{Frontend} (Next.js/React), \textbf{API Gateway} (NestJS) y \textbf{Microservicios especializados} (NestJS + NATS). Esta arquitectura permite escalabilidad independiente, desacoplamiento total mediante broker de mensajes \textbf{NATS} y despliegues separados. cada microservicio posee su propia base de datos según el dominio: \textbf{circuitos-ms} y \textbf{rotaciones-ms} consultan SQL Server 2008 (SIGERE/PSFV); \textbf{auth-ms} utiliza PostgreSQL (usuarios) y Redis (sesiones/blacklist JWT).
 
 \subsection{Metodología de investigación}
 Desde el punto de vista científico, esta investigación fue de tipo aplicada y tecnológica, pues partió de un problema real del sector eléctrico y buscó resolverlo mediante el desarrollo de una solución informática.
@@ -24,8 +26,15 @@ Se emplearon los siguientes métodos científicos:
 \end{itemize}
 La validación de los resultados se realizó mediante la comparación de escenarios históricos (10 casos) entre el método manual y el sistema automatizado, midiendo tiempos de respuesta y precisión de los cálculos.
 
-\subsection{Metodología de desarrollo de software: Programación\\ Extrema (XP)}
-El proceso de desarrollo del sistema web automatizado se guio por los principios y prácticas de la Programación Extrema (eXtreme Programming, XP)~\citep{beck2000}. XP es una metodología ágil que enfatiza la comunicación continua, la simplicidad en el diseño, la retroalimentación frecuente y la adaptación al cambio. Estos valores resultaron esenciales debido a la naturaleza del proyecto: un equipo pequeño de desarrollo (un único programador), requisitos que evolucionaron a partir del diálogo constante con el tutor y los especialistas del Despacho Provincial de Carga, y la necesidad de entregar valor de forma incremental.
+\subsection{Metodología de desarrollo de software: Programación\\ Extrema (XP) + Arquitectura de Microservicios}
+El proceso de desarrollo del sistema web automatizado se guió por los principios y prácticas de la Programación Extrema (eXtreme Programming, XP)~\citep{beck2000}. XP es una metodología ágil que enfatiza la comunicación continua, la simplicidad en el diseño, la retroalimentación frecuente y la adaptación al cambio. Estos valores resultaron esenciales debido a la naturaleza del proyecto: un equipo pequeño de desarrollo (un único programador), requisitos que evolucionaron a partir del diálogo constante con el tutor y los especialistas del Despacho Provincial de Carga, y la necesidad de entregar valor de forma incremental.
+
+La arquitectura de \textbf{microservicios} (Next.js frontend + 4 microservicios NestJS) facilitó la aplicación de XP al permitir:
+\begin{itemize}
+    \item \textbf{Desarrollo independiente por capa}: frontend, api-gateway, circuitos-ms, rotaciones-ms y auth-ms podían evolucionar por separado.
+    \item \textbf{Pruebas aisladas}: cada microservicio posee su suite de pruebas unitarias (Jest) y pruebas e2e, garantizando regresión cero.
+    \item \textbf{Integración continua}: cada servicio se construyó y testeó automáticamente mediante Turborepo.
+\end{itemize}
 
 La aplicación de XP se adaptó al contexto de desarrollo individual. Una de las prácticas clave de XP es el \textit{pair programming} (programación en pares), que no pudo aplicarse literalmente al contar con un solo desarrollador. Para mitigar esta limitación, se adoptaron las siguientes estrategias:
 \begin{itemize}
@@ -37,13 +46,13 @@ La aplicación de XP se adaptó al contexto de desarrollo individual. Una de las
 El resto de prácticas de XP se implementaron sin modificaciones:
 \begin{itemize}
     \item \textbf{Historias de usuario:} Los requisitos funcionales se capturaron mediante historias de usuario, escritas de forma colaborativa por el equipo de desarrollo y el cliente (tutor y especialistas). Cada historia describía una funcionalidad desde la perspectiva del operador del Despacho, incluyendo criterios de aceptación que posteriormente se utilizaron para las pruebas. Por ejemplo: “Como operador del Despacho, necesito visualizar en tiempo real la lista de circuitos asegurados para excluirlos automáticamente de las propuestas de rotación”.
-    \item \textbf{Diseño simple y tarjetas CRC:} Se emplearon tarjetas CRC (Clase-Responsabilidad-Colaborador) durante las primeras iteraciones, identificando clases principales del dominio (\texttt{Circuito}, \texttt{Aseguramiento}, \texttt{OrdenRotacion}). Se definió una metáfora del sistema: una “fábrica de órdenes de rotación”, donde el frontend (Next.js) actúa como interfaz de supervisión y el backend (NestJS) como motor de procesamiento de reglas de negocio.
-    \item \textbf{Iteraciones cortas e integración continua:} El desarrollo se organizó en iteraciones de una a dos semanas. Al final de cada iteración se entregaba un incremento funcional probado. Se adoptó integración continua: cada cambio se integraba al repositorio Git varias veces al día, ejecutándose pruebas unitarias automáticas.
+    \item \textbf{Diseño simple y tarjetas CRC:} Se emplearon tarjetas CRC (Clase-Responsabilidad-Colaborador) durante las primeras iteraciones, identificando clases principales del dominio (\texttt{Circuito}, \texttt{Aseguramiento}, \texttt{OrdenRotacion}) y los servicios especializados: \texttt{circuitos-ms}, \texttt{rotaciones-ms}, \texttt{auth-ms} y \texttt{api-gateway}. Se definió una metáfora del sistema: una “fábrica de órdenes de rotación” descentralizada, donde el frontend (Next.js) actúa como interfaz de supervisión, el API Gateway enruta peticiones HTTP a mensajes NATS, y los microservicios ejecutan la lógica de negocio en sus dominios respectivos.
+    \item \textbf{Iteraciones cortas e integración continua:} El desarrollo se organizó en iteraciones de una a dos semanas. Al final de cada iteración se entregaba un incremento funcional probado. Se adoptó integración continua: cada cambio se integraba al repositorio Git varias veces al día, ejecutándose pruebas unitarias automáticas. La orquestación con Turborepo permitió construir y testear todos los microservicios en paralelo.
     \item \textbf{Pruebas de aceptación con el cliente:} Al finalizar cada iteración, los especialistas validaban las propuestas de rotación generadas por el sistema, comparándolas con resultados manuales históricos. Esto permitió detectar desviaciones tempranas y ajustar prioridades.
     \item \textbf{Refactorización:} Se mantuvo la refactorización continua, apoyada por pruebas unitarias para evitar regresiones.
 \end{itemize}
 
-La elección de XP se justificó por su alineación con la arquitectura desacoplada adoptada (frontend/backend), facilitando la integración continua y la refactorización. Cada capa podía probarse independientemente, acelerando el desarrollo y reduciendo riesgos.
+La elección de XP se justificó por su alineación con la arquitectura de microservicios adoptada, facilitando la integración continua y la refactorización. Cada microservicio podía probarse independientemente, acelerando el desarrollo y reduciendo riesgos.
 
 \subsection{Convergencia de los Fundamentos en la Solución Propuesta}
 La articulación de estos fundamentos permitió transformar un proceso manual en una plataforma web escalable. Mientras los estándares EMS y las directrices del DNC definían las reglas del dominio eléctrico, el uso de un stack tecnológico moderno (JavaScript/TypeScript) permitía una gestión de estado eficiente mediante Hooks y Context API, garantizando que el especialista recibiera información procesada en tiempo real.
@@ -57,16 +66,25 @@ Como resultado, la solución integró consistentemente los datos de los sistemas
 A nivel internacional, la automatización de decisiones operativas en redes eléctricas se sustenta en los principios de los Sistemas de Gestión de Energía (EMS), que integran análisis de estados y optimización de cargas~\citep{gomez2016}. Estos sistemas se apoyan en arquitecturas SCADA para el monitoreo en tiempo real~\citep{ansi2018}. Actualmente, la tendencia global se orienta hacia la virtualización, donde la lógica de control se separa de la interfaz física mediante aplicaciones web reactivas, minimizando tiempos de respuesta y reduciendo la intervención manual.
 
 \subsection{Marco Nacional para la Automatización Operativa}
-En Cuba, las decisiones de balance generación-demanda se rigen por el Despacho Nacional de Carga (DNC)~\citep{union2023}. La dependencia actual de procesos manuales y sistemas legacy como SIGERE y PSFV (basados en SQL Server 2008)~\citep{cujae2021} justifica la implementación de una capa de servicios (backend) que automatice la extracción y procesamiento de estos datos. Los protocolos del Ministerio de Energía y Minas~\citep{ministerio2023} exigen rapidez y precisión; elementos que una Single Page Application (SPA) puede potenciar al ofrecer cálculos instantáneos y visualizaciones dinámicas.
+En Cuba, las decisiones de balance generación-demanda se rigen por el Despacho Nacional de Carga (DNC)~\citep{union2023}. La dependencia actual de procesos manuales y sistemas legacy como SIGERE y PSFV (basados en SQL Server 2008)~\citep{cujae2021} justifica la implementación de una \textbf{arquitectura de microservicios} que automatice la extracción, procesamiento y distribución de estos datos. Los protocolos del Ministerio de Energía y Minas~\citep{ministerio2023} exigen rapidez y precisión; elementos que una aplicación web moderna (SPA con Next.js) puede potenciar al ofrecer cálculos instantáneos y visualizaciones dinámicas, apoyada en un backend distribuido (NestJS + NATS) que garantiza desacoplamiento y escalabilidad.
 
 \subsection{Implicaciones de la Automatización en el Diseño del Sistema}
 La decisión de automatizar el proceso de rotación de circuitos impuso requerimientos funcionales y no funcionales que determinaron la arquitectura y tecnologías seleccionadas:
+
 \begin{itemize}
-    \item \textbf{Integración con sistemas legacy:} Se creó una capa de abstracción en NestJS para encapsular consultas a SQL Server 2008, ofreciendo una API REST uniforme al frontend. Esto unificó tablas críticas como \texttt{MSW\_Aseguramientos} y \texttt{ap\_curvas}.
-    \item \textbf{Procesamiento en tiempo real:} Los algoritmos de priorización se ejecutan en el servidor con alta eficiencia; los resultados se transmiten al cliente en formato JSON. La comunicación asíncrona (Axios) garantiza propuestas de rotación en menos de 3 segundos.
-    \item \textbf{Visualización dinámica y usabilidad:} La interfaz con React y Tailwind CSS ofrece tablas interactivas, filtros y alertas visuales, permitiendo al operador supervisar y ajustar manualmente las propuestas.
-    \item \textbf{Trazabilidad y auditoría:} Se implementó un módulo de auditoría que registra cada acción (fecha, hora, MW afectados, circuitos seleccionados, y en ajustes manuales, el operador).
-    \item \textbf{Escalabilidad y mantenibilidad:} La separación en capas y la refactorización continua (facilitadas por XP) aseguran que el sistema pueda evolucionar sin comprometer la estabilidad.
+    \item \textbf{Arquitectura de microservicios:} Se diseñaron \textbf{cuatro microservicios backend} especializados: \texttt{api-gateway} (NestJS HTTP), \texttt{circuitos-ms} (gestión de circuitos), \texttt{rotaciones-ms} (algoritmo) y \texttt{auth-ms} (identidad), más el \textbf{frontend} (Next.js/React) como capa de presentación. La comunicación entre servicios backend se realiza via \textbf{NATS}, no HTTP directo.
+    
+    \item \textbf{Integración con sistemas legacy:} Se creó una capa de abstracción por microservicio para encapsular consultas a SQL Server 2008. \texttt{circuitos-ms} consulta tablas \texttt{ap\_circuitos}, \texttt{ap\_apagones}, \texttt{ap\_curvas}; \texttt{rotaciones-ms} lee \texttt{ap\_Aseguramientos}. Cada servicio expone funcionalidades mediante mensajes NATS, ofreciendo una interfaz desacoplada.
+    
+    \item \textbf{Procesamiento en tiempo real:} Los algoritmos de priorización se ejecutan en \texttt{rotaciones-ms} con alta eficiencia; los resultados se transmiten al frontend vía API Gateway en formato JSON en 2--3 segundos. La comunicación asíncrona (Axios + interceptores JWT) garantiza propuestas de rotación instantáneas.
+    
+    \item \textbf{Multiples bases de datos:} se emplea \textbf{SQL Server 2008} para datos operativos, \textbf{PostgreSQL} para usuarios (via TypeORM en auth-ms) y \textbf{Redis} para sesiones y blacklist de tokens JWT.
+    
+    \item \textbf{Visualización dinámica y usabilidad:} La interfaz con React y Tailwind CSS v4 ofrece tablas interactivas, filtros y alertas visuales, permitiendo al operador supervisar y ajustar manualmente las propuestas.
+    
+    \item \textbf{Trazabilidad y auditoría:} Se implementó un módulo de auditoría que registra cada acción (fecha, hora, MW afectados, circuitos seleccionados, y en ajustes manuales, el operador). Actualmente en memoria de sesión; la persistencia histórica está pendiente para fase posterior.
+    
+    \item \textbf{Escalabilidad y mantenibilidad:} La separación en microservicios y la refactorización continua (facilitadas por XP) aseguran que el sistema pueda evolucionar sin comprometer la estabilidad. Cada servicio se despliega de manera independiente.
 \end{itemize}
 
 La convergencia de estos fundamentos permitió automatizar cálculos, generar propuestas consistentes, y hacerlo con la rapidez, precisión y transparencia exigidas por la operación del sistema electroenergético cubano.
@@ -86,20 +104,13 @@ La metodología de diagnóstico incluyó la identificación de variables crític
 \hline
 \textbf{Variable} & \textbf{Fuente de Datos} & \textbf{Descripción} \\
 \hline
-Cargas horarias (MW) & SIGERE: ap\_curvas & Consumo de megavatios por hora para cada circuito \\
+Cargas horarias (MW) & SIGERE: \texttt{ap\_curvas} & Consumo de megavatios por hora para cada circuito \\
 \hline
-MWh totales por circuito & SIGERE: ap\_mwxHora & Energía acumulada en mega\-vatios-horas \\
-\hline
-Órdenes DNC & SIGERE: ap\_OrdenesDNC & Restricciones y prioridades del DNC \\
-\hline
-Circuitos asegurados & PSFV: ap\_Aseguramientos & Circuitos críticos (hospitales, servicios) \\
-\hline
-Estado operativo & SIGERE: MSM\_Aseguramientos & Circuitos averiados o en mantenimiento \\
-\hline
-Bloques operativos & SIGERE: ap\_RotacionBloques & Segmentación de circuitos para rotación \\
-\hline
+Circuitos asegurados & PSFV: \texttt{ap\_Aseguramientos} & Circuitos críticos (hospitales, servicios) protegidos, con fechas de vigencia \\ \hline
+Apagones históricos & SIGERE: \texttt{ap\_apagones} & Registro de circuitos apagados con fecha/hora y MW afectados \\ \hline
+Catálogo de circuitos & SIGERE: \texttt{ap\_circuitos} & Información básica: id, número, bloque, zona, flag apagable \\ \hline
 \end{tabular}
-\caption{Variables consideradas en el proceso manual de rotación de circuitos}
+\caption{Variables consideradas en el proceso de rotación de circuitos (fuentes reales del sistema)}
 \label{tab:variables_rotacion}
 \end{table}
 
@@ -128,17 +139,17 @@ Acceso a datos dispersos & 2 bases + múltiples tablas & Complejidad operativa \
 
 Como se resume en la Tabla~\ref{tab:problemas_manual}, el problema científico central radicaba en la ausencia de una plataforma web integrada que automatizara el análisis de estas variables. La subutilización de los datos existentes en SQL Server 2008~\citep{jones2019} limitaba la eficiencia operativa del Despacho Provincial~\citep{ministerio2023}.
 
-La solución implementada con \textbf{Next.js} y \textbf{React} automatiza el cálculo del déficit y proporciona una interfaz gráfica reactiva, transformando el rol del especialista de ejecutor manual a supervisor de propuestas generadas automáticamente por el backend en \textbf{NestJS}.
+La solución implementada con \textbf{Next.js 16} (frontend) y una \textbf{arquitectura de microservicios} (API Gateway NestJS + circuitos-ms + rotaciones-ms + auth-ms, comunicación via NATS) automatiza el cálculo del déficit y proporciona una interfaz gráfica reactiva, transformando el rol del especialista de ejecutor manual a supervisor de propuestas generadas automáticamente por el algoritmo central en \texttt{rotaciones-ms}.
 
 % ------------------------------------------------------------------
 \section{Conclusiones del capítulo}
 
 \begin{enumerate}
-    \item La sistematización de los fundamentos teórico-metodológicos permitió definir el marco conceptual del sistema web para la rotación de circuitos eléctricos, basado en estándares internacionales (CIM IEC 61970) y en las directrices del Despacho Nacional de Carga cubano. Se adoptó la Programación Extrema (XP) como metodología ágil, adaptando sus prácticas al desarrollo individual mediante revisiones de código con el tutor.
+    \item La sistematización de los fundamentos teórico-metodológicos permitió definir el marco conceptual del sistema web para la rotación de circuitos eléctricos, basado en estándares internacionales (CIM IEC 61970) y en las directrices del Despacho Nacional de Carga cubano. Se adoptó la Programación Extrema (XP) como metodología ágil, adaptando sus prácticas al desarrollo individual mediante revisiones de código con el tutor. La arquitectura resultante es de \textbf{microservicios} (Next.js + API Gateway NestJS + circuitos-ms + rotaciones-ms + auth-ms, comunicación via NATS), lo que permitió desacoplamiento total, escalabilidad independiente y despliegues separados.
     
-    \item El análisis de la automatización en sistemas de gestión energética evidenció que las tendencias actuales apuntan hacia la virtualización mediante aplicaciones web reactivas, reduciendo tiempos de respuesta y minimizando la intervención manual. En el contexto nacional, la automatización se justificó por la necesidad de integrar datos de sistemas legacy (SIGERE y PSFV) y cumplir con las exigencias de rapidez y precisión del Ministerio de Energía y Minas.
+    \item El análisis de la automatización en sistemas de gestión energética evidenció que las tendencias actuales apuntan hacia la virtualización mediante aplicaciones web reactivas, reduciendo tiempos de respuesta y minimizando la intervención manual. En el contexto nacional, la automatización se justificó por la necesidad de integrar datos de sistemas legacy (SIGERE y PSFV basados en SQL Server 2008) y cumplir con las exigencias de rapidez y precisión del Ministerio de Energía y Minas. La arquitectura implementada (microservicios + bases de datos heterogéneas: SQL Server 2008, PostgreSQL, Redis) garantiza interoperabilidad con la infraestructura existente mientras introduce tecnologías modernas.
     
-    \item El diagnóstico del proceso manual reveló limitaciones críticas: tiempos de respuesta de 30–45 minutos, errores humanos en el 5–10\% de los cálculos, alta inconsistencia entre operadores, nula capacidad de simulación y acceso a datos dispersos. Estas deficiencias confirmaron la pertinencia de la plataforma web automatizada.
+    \item El diagnóstico del proceso manual reveló limitaciones críticas: tiempos de respuesta de 30–45 minutos, errores humanos en el 5–10\% de los cálculos, alta inconsistencia entre operadores, nula capacidad de simulación y acceso a datos dispersos. Estas deficiencias confirmaron la pertinencia de la plataforma web automatizada con arquitectura de microservicios, que reduce el tiempo de generación de rotación a 2--3 segundos.
     
-    \item La integración de los tres ejes abordados —fundamentos teórico-metodológicos, automatización energética y diagnóstico empírico— proporciona una base sólida para el diseño e implementación de la solución propuesta, estableciendo coherencia entre el problema científico y las decisiones arquitectónicas.
+    \item La integración de los tres ejes abordados —fundamentos teórico-metodológicos, automatización energética y diagnóstico empírico— proporciona una base sólida para el diseño e implementación de la solución propuesta, estableciendo coherencia entre el problema científico y las decisiones arquitectónicas (microservicios, NATS, múltiples bases de datos, XP).
 \end{enumerate}

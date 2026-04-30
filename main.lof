@@ -1,8 +1,6 @@
 \babel@toc {spanish}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Arquitectura del sistema automatizado de rotación de circuitos (Next.js - NestJS)}}{14}{figure.caption.15}%
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Algoritmo minimalista de rotación de circuitos}}{15}{figure.2.2}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Arquitectura del sistema automatizado de rotación de circuitos (Next.js - Microservicios NestJS + NATS)}}{16}{figure.caption.15}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Prueba de login exitoso en AuthService}}{23}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Prueba de login en AuthContext}}{24}{figure.3.2}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Prueba de login en AuthContext}}{28}{figure.3.1}%

@@ -126,9 +126,9 @@ A continuación se presentaron las historias de usuario definidas durante la fas
 \hline
 \textbf{Programador asignado:} & Brayan Castellano Cruz \\
 \hline
-\textbf{Descripción:} & El sistema debía mostrar una lista de todos los circuitos con sus datos principales: código, carga actual (MW), estado (activo/avería/asegurado), bloque operativo. La vista debía poder actualizarse mediante un botón "Actualizar". \\
+\textbf{Descripción:} & El sistema debía mostrar una lista de todos los circuitos con sus datos principales: código, carga actual (MW) desde SIGERE (ap\_curvas), bloque operativo (campo Bloque en ap\_circuitos) y disponibilidad para rotación. La vista debía poder actualizarse mediante un botón "Actualizar" que consultaba al microservicio circuitos-ms vía NATS. \\
 \hline
-\textbf{Observaciones:} & Los circuitos asegurados se mostraban en verde, los averiados en rojo. Se incluyeron filtros por código y bloque. \\
+\textbf{Observaciones:} & Los circuitos con apagón abierto (registrados en ap\_apagones con FechaCierre NULL) se marcaban visualmente en rojo. Los circuitos asegurados (presentes en PSFV: ap\_Aseguramientos con fecha vigente) se marcaban en verde. Se incluyeron filtros por código y bloque. \\
 \hline
 \end{tabular}
 \end{table}
@@ -145,21 +145,21 @@ A continuación se presentaron las historias de usuario definidas durante la fas
 \hline
 \textbf{Usuario:} & Administrador / Operador \\
 \hline
-\textbf{Nombre:} & Gestión de circuitos asegurados (críticos) \\
+\textbf{Nombre:} & Visualización de circuitos asegurados (críticos) \\
 \hline
 \textbf{Prioridad en negocio:} & Alta \\
 \hline
 \textbf{Puntos estimados:} & 1 \\
 \hline
-\textbf{Riesgo de desarrollo:} & Medio \\
+\textbf{Riesgo de desarrollo:} & Bajo \\
 \hline
 \textbf{Iteraciones necesarias:} & 1 \\
 \hline
 \textbf{Programador asignado:} & Brayan Castellano Cruz \\
 \hline
-\textbf{Descripción:} & El sistema debía permitir marcar/desmarcar circuitos como "asegurados" (críticos) para que fueran excluidos automáticamente de las propuestas de rotación. \\
+\textbf{Descripción:} & El sistema debía identificar y marcar visualmente los circuitos catalogados como "asegurados" (críticos) en la base PSFV (ap\_Aseguramientos), para que fueran excluidos automáticamente de las propuestas de rotación. La información se obtenía del microservicio circuitos-ms vía NATS. \\
 \hline
-\textbf{Observaciones:} & La lista de asegurados se obtenía de PSFV (ap\_Aseguramientos) y podía ser modificada por el administrador. \\
+\textbf{Observaciones:} & El estado de aseguramiento se determinaba verificando si el circuito tiene un registro vigente en ap\_Aseguramientos (fecha actual entre fechaInicial y fechaFinal). No se implementó interfaz de CRUD para aseguramientos; estos se consultan directamente de la base de datos legacy. \\
 \hline
 \end{tabular}
 \end{table}
@@ -219,9 +219,9 @@ A continuación se presentaron las historias de usuario definidas durante la fas
 \hline
 \textbf{Programador asignado:} & Brayan Castellano Cruz \\
 \hline
-\textbf{Descripción:} & El sistema debía generar una propuesta de rotación de circuitos (orden de afectación) basada en el déficit calculado, priorizando por bloques y excluyendo los circuitos asegurados. \\
+\textbf{Descripción:} & El sistema debía generar una propuesta de rotación de circuitos (orden de afectación) basada en el déficit calculado, priorizando circuitos por tiempo de estado (FIFO: mayor tiempo apagado primero, mayor tiempo encendido primero) y excluyendo automáticamente los circuitos asegurados (leyendo de PSFV: ap\_Aseguramientos). La prioridad por bloques se aplicaba como criterio secundario. \\
 \hline
-\textbf{Observaciones:} & El algoritmo consideraba las tablas ap\_RotacionBloques y ap\_OrdenesDNC. \\
+\textbf{Observaciones:} & El algoritmo consumía datos de SIGERE (ap\_circuitos, ap\_curvas, ap\_apagones) y PSFV (ap\_Aseguramientos). La generación ocurría en el microservicio rotaciones-ms vía NATS. \\
 \hline
 \end{tabular}
 \end{table}
@@ -414,13 +414,13 @@ A continuación se presentaron las tarjetas CRC (Clase-Responsabilidad-Colaborac
 \hline
 \textbf{Responsabilidades} & 
 \begin{minipage}[t]{9cm}
-- Almacenar código, nombre y bloque al que pertenece \\
+- Almacenar código, nombre, bloque y datos básicos \\
 - Conocer la carga actual (MW) desde SIGERE (ap\_curvas) \\
-- Conocer el estado operativo (activo/avería/asegurado) \\
-- Saber si está disponible para rotación
+- Determinar estado operativo: activo, apagado (si tiene apagón abierto en ap\_apagones) o asegurado (si está en ap\_Aseguramientos vigente) \\
+- Saber si está disponible para rotación (no asegurado, no apagado)
 \end{minipage} \\
 \hline
-\textbf{Colaboraciones} & Bloque, Aseguramiento, OrdenRotacion \\
+\textbf{Colaboraciones} & Bloque, Aseguramiento, Apagon, OrdenRotacion \\
 \hline
 \end{tabular}
 \end{table}
@@ -437,9 +437,9 @@ A continuación se presentaron las tarjetas CRC (Clase-Responsabilidad-Colaborac
 \hline
 \textbf{Responsabilidades} & 
 \begin{minipage}[t]{9cm}
-- Almacenar identificador y prioridad del bloque (1,2,...) \\
-- Conocer los circuitos que lo componen (ap\_RotacionBloques) \\
-- Establecer orden de prioridad para rotación
+- Almacenar identificador y prioridad del bloque (1, 2, ...) \\
+- Conocer los circuitos que lo componen (consultando ap\_circuitos filtrados por Bloque) \\
+- Establecer orden de prioridad para rotación (bloque 1 tiene mayor prioridad que bloque 2, etc.)
 \end{minipage} \\
 \hline
 \textbf{Colaboraciones} & Circuito \\
@@ -481,14 +481,15 @@ A continuación se presentaron las tarjetas CRC (Clase-Responsabilidad-Colaborac
 \hline
 \textbf{Responsabilidades} & 
 \begin{minipage}[t]{9cm}
-- Calcular el déficit (MW\_Afectados - MW\_Asegurados) \\
-- Generar propuesta de rotación priorizando por bloques \\
-- Excluir circuitos asegurados de la propuesta \\
-- Permitir ajuste manual por el operador \\
-- Registrar la orden aprobada para historial
+- Calcular el déficit (MW\_Afectados - MW\_Asegurados) consumiendo datos de ap\_apagones y ap\_Aseguramientos \\
+- Generar propuesta de rotación aplicando algoritmo FIFO (mayor tiempo apagado primero, mayor tiempo encendido primero) \\
+- Excluir circuitos asegurados (protegidos) de la propuesta \\
+- Ordenar por bloque como criterio secundario \\
+- Permitir ajuste manual por el operador (opcional) \\
+- Registrar la orden aprobada para historial y auditoría
 \end{minipage} \\
 \hline
-\textbf{Colaboraciones} & Circuito, Aseguramiento, Bloque, Usuario, Auditoria \\
+\textbf{Colaboraciones} & Circuito, Aseguramiento, Apagon, Bloque, Usuario, Auditoria, MicroservicioRotaciones \\
 \hline
 \end{tabular}
 \end{table}
@@ -944,17 +945,15 @@ HU2 & Gestión de usuarios (CRUD) & Listar, crear, editar, eliminar usuarios; va
 \hline
 HU3 & Gestión de roles y permisos & Asignación de roles, control de acceso por rol (2) \\
 \hline
-HU4 & Visualización de circuitos & Mostrar lista de circuitos con carga, estado (activo/avería/asegurado); filtros; actualización manual (6) \\
+HU4 & Visualización de circuitos & Mostrar lista de circuitos con carga (ap\_curvas), bloque (ap\_circuitos.Bloque), y estado determinado dinámicamente (activo/apagado/asegurado); filtros; actualización manual vía circuito-ms (6) \\
 \hline
-HU5 & Gestión de circuitos asegurados & Marcar/desmarcar circuitos críticos; sincronización con PSFV; exclusión automática de propuestas (5) \\
+HU5 & Visualización de circuitos asegurados & Identificar circuitos críticos desde PSFV (ap\_Aseguramientos) y marcarlos visualmente; exclusión automática en propuestas de rotación (5) \\
 \hline
-HU6 & Cálculo automático del déficit & Suma de MW afectados, suma de MW asegurados, cálculo de diferencia (3) \\
+HU6 & Cálculo automático del déficit & Suma de MW afectados (ap\_apagones), suma de MW asegurados (ap\_Aseguramientos), cálculo de diferencia vía rotaciones-ms (3) \\
 \hline
-HU7 & Generación de propuesta de rotación & Ordenar por bloques, excluir asegurados, aplicar prioridades DNC, generar lista de circuitos a rotar (8) \\
+HU7 & Generación de propuesta de rotación & Algoritmo FIFO por tiempo de estado, excluir asegurados, ordenar por bloque como criterio secundario, generar lista de circuitos a rotar vía rotaciones-ms (8) \\
 \hline
-HU8 & Ajuste manual de propuestas & Agregar/quitar circuitos manualmente, registrar cambios, auditoría (4) \\
-\hline
-HU9 & Dashboard de monitoreo & Mostrar déficit actual, MW afectados vs asegurados, alertas visuales (3) \\
+HU9 & Dashboard de monitoreo & Mostrar déficit actual, MW afectados vs asegurados, indicadores en tiempo real vía API Gateway (3) \\
 \hline
 HU10 & Exportación de órdenes & Generar PDF, generar Excel, incluir metadatos (3) \\
 \hline

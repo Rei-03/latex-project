@@ -4,86 +4,156 @@
 
 El presente capítulo tiene como objetivo describir y fundamentar el diseño de la solución informática propuesta para resolver el problema científico identificado en el capítulo anterior, relacionado con las limitaciones del proceso manual de rotación de circuitos eléctricos ante déficit de generación en el Despacho Provincial de Carga. En correspondencia con los fundamentos teóricos, regulatorios y metodológicos previamente sistematizados, este capítulo expone la concepción arquitectónica, los artefactos de requisitos, las tecnologías seleccionadas y la descripción funcional de la plataforma web desarrollada \cite{pressman2020}.
 
-El diseño de la solución se enmarca en los principios de la Ingeniería de Software orientada a sistemas de misión crítica, donde la arquitectura constituye un elemento determinante para garantizar calidad, mantenibilidad y desempeño \cite{bass2013}. En entornos energéticos regulados, el diseño no puede limitarse a la implementación funcional, sino que debe asegurar coherencia estructural, separación de responsabilidades y cumplimiento de requisitos operativos de alta disponibilidad \cite{gomez2016}. Por tanto, la solución propuesta fue concebida bajo una arquitectura desacoplada cliente-servidor, basada en Next.js para el frontend, NestJS para el backend y SQL Server 2008 como sistema de persistencia legacy.
+El diseño de la solución se enmarca en los principios de la Ingeniería de Software orientada a sistemas de misión crítica, donde la arquitectura constituye un elemento determinante para garantizar calidad, mantenibilidad y desempeño \cite{bass2013}. En entornos energéticos regulados, el diseño no puede limitarse a la implementación funcional, sino que debe asegurar coherencia estructural, separación de responsabilidades y cumplimiento de requisitos operativos de alta disponibilidad \cite{gomez2016}. Por tanto, la solución propuesta fue concebida bajo una \textbf{arquitectura de microservicios}, organizada en una API Gateway que actúa como punto de entrada único y cuatro microservicios especializados: \textbf{auth-ms} (gestión de usuarios y autenticación JWT), \textbf{circuitos-ms} (gestión de circuitos eléctricos), \textbf{rotaciones-ms} (algoritmo de rotación) y \textbf{api-gateway} (orquestación HTTP). La comunicación inter-servicio se realiza mediante el broker de mensajes \textbf{NATS}, garantizando desacoplamiento total. El frontend se desarrolló con \textbf{Next.js 16} (App Router) y \textbf{React 19}, mientras que la persistencia combina \textbf{SQL Server 2008} (datos operativos de circuitos y rotaciones), \textbf{PostgreSQL} (usuarios y roles) y \textbf{Redis} (sesiones y blacklist de tokens JWT).
 
 El capítulo se organiza en tres secciones principales: (1) fundamentos tecnológicos para el desarrollo del sistema; (2) descripción de la solución propuesta; y (3) ingeniería de requisitos del sistema.
 
 % ------------------------------------------------------------------
 \section{Fundamentos Tecnológicos para el Desarrollo del Sistema}
 
-La selección de las tecnologías se fundamentó en tres criterios principales: la necesidad de una arquitectura cliente-servidor para accesibilidad multiusuario, la compatibilidad con la infraestructura de datos legacy en el Despacho Provincial de Carga~\citep{villalba2021}, y la adecuación a los requerimientos operativos de alta disponibilidad del Despacho Nacional de Carga (DNC)~\citep{union2023}.
+La selección de las tecnologías se fundamentó en tres criterios principales: la necesidad de una arquitectura de microservicios para accesibilidad multiusuario y escalabilidad horizontal, la compatibilidad con la infraestructura de datos legacy en el Despacho Provincial de Carga~\citep{villalba2021}, y la adecuación a los requerimientos operativos de alta disponibilidad del Despacho Nacional de Carga (DNC)~\citep{union2023}.
 
-\subsection{Capa de presentación: Next.js y React}
-Para el desarrollo de la capa de presentación se seleccionó el framework \textbf{Next.js} basado en la biblioteca \textbf{React}. Esta decisión permitió el desarrollo de una \textit{Single Page Application} (SPA) que garantiza una interfaz de usuario fluida y reactiva. El uso de \textbf{Tailwind CSS} para el estilizado facilitó la creación de componentes visuales de alto rendimiento, optimizados para la visualización de grandes volúmenes de datos operativos. A diferencia de las aplicaciones de escritorio tradicionales, esta tecnología permite el acceso al sistema desde cualquier nodo de la red local sin necesidad de instalaciones locales.
+\subsection{Capa de presentación: Next.js 16 y React 19 (App Router)}
+Para el desarrollo de la capa de presentación se seleccionó el framework \textbf{Next.js 16} (con App Router) basado en \textbf{React 19}. Esta decisión permitió el desarrollo de una aplicación web moderna que aprovecha el renderizado híbrido (SSR/SSG) y la navegación optimizada por rutas. El uso de \textbf{Tailwind CSS v4} para el estilizado facilitó la creación de componentes visuales responsivos y de alto rendimiento, optimizados para la visualización de grandes volúmenes de datos operativos. El estado global de autenticación se gestiona mediante \textbf{React Context API}, asegurando sincronización entre vistas sin recargar la página. A diferencia de las aplicaciones de escritorio tradicionales, esta tecnología permite el acceso al sistema desde cualquier nodo de la red local sin necesidad de instalaciones locales.
 
-\subsection{Capa de servicios: NestJS}
-Para la capa de servicios se implementó \textbf{NestJS}, un framework de Node.js progresivo que permite construir aplicaciones del lado del servidor eficientes y escalables. NestJS actúa como una API REST robusta que centraliza la lógica de negocio y el algoritmo de rotación. Esta capa gestiona la comunicación con los servidores \textbf{SQL Server 2008} mediante una capa de abstracción de datos, ejecutando consultas optimizadas a las bases SIGERE y PSFV~\citep{jones2019}. El backend garantiza que el procesamiento del déficit y la priorización de circuitos ocurran en un entorno controlado, devolviendo al cliente únicamente la información procesada y validada.
+\subsection{Arquitectura de microservicios (NestJS + NATS)}
+Para la capa de servicios se adoptó una \textbf{arquitectura de microservicios} basada en \textbf{NestJS}, dividida en cuatro servicios especializados:
 
-\subsection{Persistencia: SQL Server 2008 (consideraciones y limitaciones)}
-La gestión de persistencia de datos se mantuvo en SQL Server 2008, dado que constituía la infraestructura ya establecida y validada en el Despacho Provincial~\citep{ministerio2023}. El sistema aprovechó procedimientos almacenados existentes y garantizó la integridad transaccional necesaria para operaciones de maniobra eléctrica.
+\begin{itemize}
+    \item \textbf{auth-ms}: gestiona autenticación, autorización y gestión de usuarios. Implementa JWT con refresh tokens, blacklist en Redis para invalidación de sesiones y hashing de contraseñas con bcrypt. Utiliza \textbf{PostgreSQL} (vía TypeORM) como base de datos de usuarios y \textbf{Redis} para caché de sesiones.
+    
+    \item \textbf{circuitos-ms}: administra el catálogo de circuitos eléctricos y su consumo. Se conexiona directamente a \textbf{SQL Server 2008} (bases SIGERE y PSFV) mediante el driver \texttt{mssql}, ejecutando consultas optimizadas sobre tablas como \texttt{ap\_circuitos}. Expone sus funcionalidades via mensajes \textbf{NATS}.
+    
+    \item \textbf{rotaciones-ms}: implementa el núcleo algorítmico de rotación. Consume datos de circuitos (via NATS desde circuitos-ms) y de aseguramientos (SQL Server). Aplica los algoritmos de priorización por bloques y genera las propuestas de rotación. También se conecta a SQL Server para persistencia de resultados.
+    
+    \item \textbf{api-gateway}: actúa como punto de entrada HTTP único (puerto 3001). Recibe peticiones REST desde el frontend, las traduce a mensajes NATS dirigidos a los microservicios correspondientes y devuelve las respuestas en formato JSON. Centraliza CORS, filtros de error globales y la configuración de seguridad.
+\end{itemize}
 
-\textbf{Nota sobre la versión:} SQL Server 2008 es una versión cuyo soporte extendido finalizó en 2019. Su uso en el proyecto responde a que la infraestructura del Despacho no ha sido migrada por restricciones presupuestarias y organizativas. Esta limitación se asume como un riesgo controlado: la comunicación entre NestJS y la base de datos se realiza únicamente mediante consultas parametrizadas y procedimientos almacenados, sin exponer la base directamente a la red. No obstante, se recomienda en futuras versiones migrar a SQL Server 2019 o PostgreSQL para garantizar seguridad y soporte a largo plazo.
+La comunicación entre microservicios se realiza mediante el \textbf{broker de mensajes NATS}, garantizando desacoplamiento total, escalabilidad horizontal y tolerancia a fallos. Cada microservicio corre en su propio proceso y puede escalar independientemente según la carga. Esta arquitectura contrasta con un monolito tradicional, permitiendo despliegues independientes y mayor resiliencia.
 
-La integración entre el backend moderno y la base de datos heredada se realizó mediante conectores optimizados que aseguran tiempos de respuesta inferiores a los 3 segundos, cumpliendo con estándares internacionales para sistemas de automatización energética~\citep{ansi2018}.
+\subsection{Persistencia: bases de datos heterogéneas}
+La gestión de persistencia de datos se distribuye según el dominio de cada microservicio:
 
-\subsection{Metodología de desarrollo}
+\begin{itemize}
+    \item \textbf{SQL Server 2008}: utilizado por \texttt{circuitos-ms} y \texttt{rotaciones-ms} para acceder a las bases de datos operativas \texttt{SIGERE} y \texttt{PSFV}. Se consultan tablas como \texttt{ap\_circuitos}, \texttt{ap\_Aseguramientos} y \texttt{ap\_curvas} mediante procedimientos almacenados y consultas parametrizadas. El sistema aprovecha la infraestructura ya establecida en el Despacho Provincial.
+    
+    \item \textbf{PostgreSQL}: empleado por \texttt{auth-ms} (via TypeORM) para almacenar usuarios, roles y permisos. Permite validación de esquemas, transacciones y consultas complejas para gestión de identidad.
+    
+    \item \textbf{Redis}: utilizado por \texttt{auth-ms} y \texttt{api-gateway} como caché de sesiones y para almacenar la \textbf{blacklist de tokens JWT} invalidados (logout). Garantiza alta disponibilidad y baja latencia para operaciones de autenticación.
+\end{itemize}
+
+\textbf{Nota sobre SQL Server 2008:} SQL Server 2008 es una versión cuyo soporte extendido finalizó en 2019. Su uso en el proyecto responde a que la infraestructura del Despacho no ha sido migrada por restricciones presupuestarias y organizativas. Esta limitación se asume como un riesgo controlado: la comunicación con la base de datos se realiza únicamente mediante consultas parametrizadas y procedimientos almacenados, sin exponer la base directamente a la red. No obstante, se recomienda en futuras versiones migrar a SQL Server 2019 o PostgreSQL para garantizar seguridad y soporte a largo plazo.
+
+La integración entre los microservicios modernos y las bases de datos heredadas se realizó mediante conectores optimizados que aseguran tiempos de respuesta inferiores a los 3 segundos, cumpliendo con estándares internacionales para sistemas de automatización energética~\citep{ansi2018}.
+
+\subsection{Metodología de desarrollo y arquitectura de monorepo}
 Para la metodología de desarrollo se adoptó la Programación Extrema (XP) como marco ágil de trabajo~\citep{beck2000}. Esta elección permitió organizar el desarrollo en iteraciones cortas (una o dos semanas), donde al final de cada iteración se entregaba un incremento funcional validado directamente por los especialistas del Despacho. La retroalimentación continua del cliente facilitó la adaptación del sistema a las necesidades emergentes del flujo de trabajo real.
+
+El código se organiza en un \textbf{monorepo} gestionado por \textbf{Turborepo}, donde coexisten el frontend (Next.js) y los cuatro microservicios NestJS. Esta estructura facilita la compartición de librerías comunes (paquete \texttt{@une/ms-common} con filtros, DTOs y utilidades) y la orquestación de builds y tests. Cada microservicio posee su propio \texttt{package.json} y puede desplegarse de manera independiente.
 
 % ------------------------------------------------------------------
 \section{Descripción de la Solución Propuesta}
 
-La plataforma web automatizada integra y procesa información dispersa en múltiples fuentes~\citep{villalba2021}, generando órdenes optimizadas de rotación de circuitos ante déficit de generación~\citep{gomez2016}.
+La plataforma web automatizada integra y procesa información dispersa en múltiples fuentes~\citep{villalba2021}, generando órdenes optimizadas de rotación de circuitos ante déficit de generación~\citep{gomez2016}. El sistema implementa una \textbf{arquitectura de microservicios} organizada en tres capas lógicas: frontend (Next.js), API Gateway (NestJS) y microservicios especializados (NestJS + NATS).
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.82\textwidth]{img/arquitectura_sistema.png}
-\caption{Arquitectura del sistema automatizado de rotación de circuitos (Next.js - NestJS)}
+\caption{Arquitectura del sistema automatizado de rotación de circuitos (Next.js - Microservicios NestJS + NATS)}
 \label{fig:arquitectura_sistema}
 \end{figure}
 
-Como se ilustra en la Figura~\ref{fig:arquitectura_sistema}, el sistema implementa una \textbf{arquitectura desacoplada} que organiza los componentes en dos bloques fundamentales: un cliente web reactivo y un servidor de aplicaciones.
+Como se ilustra en la Figura~\ref{fig:arquitectura_sistema}, el sistema organiza los componentes en los siguientes bloques:
 
-\subsection{Capa de Presentación (Frontend: Next.js/React)}
-La interfaz de usuario se desarrolló como una SPA utilizando \textbf{React y Tailwind CSS}~\citep{pressman2020}. Permite visualizar el déficit en tiempo real mediante componentes reactivos, supervisar propuestas automatizadas en tablas dinámicas y gestionar excepciones operativas (circuitos asegurados). El estado global se gestiona mediante \textbf{Context API}, asegurando sincronización de datos entre vistas sin recargar la página.
+\subsection{Capa de Presentación (Frontend: Next.js 16/React 19)}
+La interfaz de usuario se desarrolló como una aplicación web moderna utilizando \textbf{Next.js 16} con App Router y \textbf{React 19}. Permite visualizar el déficit en tiempo real mediante componentes reactivos, supervisar propuestas automatizadas en tablas dinámicas y gestionar excepciones operativas (circuitos asegurados). El estado global de autenticación se gestiona mediante \textbf{Context API}, asegurando sincronización de datos entre vistas sin recargar la página. La aplicación consume exclusivamente la API REST expuesta por el \textbf{api-gateway} (puerto 3001) mediante \textbf{Axios} con interceptores que adjuntan automáticamente el token JWT. Las llamadas siguen el patrón de respuesta \texttt{\{success, data, [error], timestamp\}}.
 
-\subsection{Capa de Lógica de Negocio (Backend: NestJS)}
-El núcleo algorítmico reside en el servidor con \textbf{NestJS}. Implementa el cálculo automatizado del déficit:
-\[
-\text{Déficit} = \sum \text{MW\_Afectados} - \sum \text{MW\_Asegurados}
-\]
+\subsection{API Gateway (Punto de Entrada HTTP)}
+El \textbf{api-gateway} es el único punto de entrada HTTP al sistema (puerto 3001). Implementado con NestJS, recibe peticiones REST del frontend y las traduce a mensajes \textbf{NATS} para enviar a los microservicios correspondientes. Centraliza CORS, filtros de error globales y la validación de tokens JWT (mediante guard). Los endpoints principales son:
+\begin{itemize}
+    \item \texttt{GET /circuitos}: lista circuitos (consulta a circuitos-ms via NATS)
+    \item \texttt{GET /circuitos/with-consumption-and-apagones}: circuitos con consumo y apagones
+    \item \texttt{POST /rotaciones/generar}: genera propuesta de rotación (envía mensaje NATS a rotaciones-ms)
+    \item \texttt{POST /auth/login}, \texttt{/register}, \texttt{/refresh}: gestión de autenticación (envía a auth-ms)
+    \item \texttt{GET /rotaciones/aseguramientos}: lista aseguramientos
+\end{itemize}
 
-\begin{center}
-\includegraphics[width=0.8\textwidth]{img/algoritmo_rotacion_min.png}
-\captionof{figure}{Algoritmo minimalista de rotación de circuitos}
-\label{fig:algoritmo-rotacion}
-\end{center}
+\subsection{Microservicio de Circuitos (circuitos-ms)}
+Este servicio gestiona el catálogo de circuitos eléctricos y sus datos de consumo. Se conecta directamente a \textbf{SQL Server 2008} (SIGERE/PSFV) y expone funcionalidades via NATS. Las consultas más relevantes incluyen:
+\begin{itemize}
+    \item \texttt{circuitos.findAll}: lista paginada con filtros por bloque y apagabilidad
+    \item \texttt{circuitos.findWithConsumptionAndApagones}: retorna circuitos con su último consumo y último apagón (optimizado para rotaciones-ms)
+    \item \texttt{circuitos.findOne}: detalles de un circuito específico
+\end{itemize}
+El servicio aplica optimización de consultas con índices y paginación para manejar grandes volúmenes de datos.
 
-El backend aplica algoritmos de priorización inteligente, excluyendo automáticamente circuitos críticos o bajo mantenimiento, y expone una \textbf{API REST} que procesa solicitudes del cliente, eliminando la carga de cálculo en el navegador~\citep{zhou2023}.
+\subsection{Microservicio de Rotaciones (rotaciones-ms)}
+Coordina la lógica algorítmica de rotación y consume datos de otros microservicios:
 
-\subsection{Capa de Acceso a Datos (Persistencia)}
-El sistema establece una conexión optimizada con \textbf{SQL Server 2008} (SIGERE y PSFV)~\citep{jones2019}. El backend actúa como orquestador, unificando tablas críticas como \texttt{MSW\_Aseguramientos} y \texttt{ap\_curvas}, resolviendo la fragmentación histórica de los datos~\citep{ministerio2023}.
-
-\subsection{Flujo de Operación del Sistema}
-El proceso sigue esta secuencia:
 \begin{enumerate}
-    \item El operador introduce parámetros en la interfaz de React.
-    \item El cliente envía una petición asíncrona mediante \textbf{Axios} al servidor NestJS.
-    \item El servidor consulta las bases SQL Server mediante procedimientos almacenados.
-    \item El motor de lógica aplica los algoritmos de priorización.
-    \item La respuesta se envía al cliente en formato JSON.
+    \item Obtiene circuitos con consumo desde \textbf{circuitos-ms} via NATS
+    \item Obtiene aseguramientos activos desde su propia conexión a \textbf{SQL Server 2008}
+    \item Enriquece circuitos con estado de protección (asegurados)
+    \item Ejecuta el algoritmo de priorización por bloques (\textbf{RotacionAlgoritmo})
+    \item Devuelve lista de circuitos a apagar y a encender
+\end{enumerate}
+
+El algoritmo sigue la regla: \textbf{Déficit = MW\_Afectados - MW\_Asegurados}. Los circuitos se ordenan por bloque (prioridad) y se seleccionan secuencialmente hasta cubrir el déficit, con opción de encender circuitos previamente apagados (FIFO).
+
+\subsection{Microservicio de Autenticación (auth-ms)}
+Gestiona identidad y acceso con las siguientes características:
+
+\begin{itemize}
+    \item \textbf{Autenticación}: login/register con validación de credenciales
+    \item \textbf{JWT}: emite access token (corta vida) y refresh token (larga vida)
+    \item \textbf{Blacklist}: tokens invalidados (logout) se almacenan en Redis
+    \item \textbf{Hash de contraseñas}: bcrypt con salt
+    \item \textbf{Base de datos}: usuarios en PostgreSQL (TypeORM)
+    \item \textbf{Roles}: Admin y Operador (permisos diferenciados)
+\end{itemize}
+
+\subsection{Flujo de Operación del Sistema (vía NATS)}
+El proceso completo sigue esta secuencia desacoplada:
+
+\begin{enumerate}
+    \item El operador introduce parámetros en la interfaz de React (déficit, fecha, etc).
+    \item El frontend envía \texttt{POST /rotaciones/generar} al API Gateway.
+    \item El API Gateway recibe la petición HTTP y la traduce a un mensaje NATS \texttt{rotaciones.generar}.
+    \item El microservicio \textbf{rotaciones-ms} recibe el mensaje NATS y obtiene datos necesarios:
+    \begin{itemize}
+        \item Envía mensaje NATS \texttt{circuitos.findWithConsumptionAndApagones} a circuitos-ms
+        \item Consulta SQL Server para obtener aseguramientos activos
+    \end{itemize}
+    \item El algoritmo procesa los datos y devuelve el resultado a rotaciones-ms.
+    \item rotaciones-ms responde al mensaje NATS, el API Gateway recibe la respuesta.
+    \item El API Gateway devuelve JSON al frontend.
     \item La interfaz se actualiza instantáneamente reflejando la propuesta de rotación.
 \end{enumerate}
 
 \subsection{Integración y Seguridad}
-La solución se integra con la infraestructura existente mediante compatibilidad total con SQL Server 2008, seguridad con \textbf{JWT} para control de acceso y rendimiento optimizado (cálculo en menos de 3 segundos). Al ser una aplicación web, garantiza interoperabilidad desde cualquier dispositivo con navegador dentro de la red del Despacho.
+La solución se integra con la infraestructura existente mediante compatibilidad total con SQL Server 2008, PostgreSQL y Redis. La seguridad implementa:
 
-\subsection{Ventajas de la Arquitectura Web}
-Esta arquitectura ofrece:
 \begin{itemize}
-    \item \textbf{Escalabilidad}: permite añadir funcionalidades sin afectar al cliente.
-    \item \textbf{Despliegue centralizado}: elimina la necesidad de instalar software en cada terminal.
-    \item \textbf{Mantenibilidad}: separa claramente la UI de la lógica de datos.
+    \item \textbf{Autenticación JWT}: access tokens firmados con secreto compartido, refresh tokens con expiración extendida
+    \item \textbf{Blacklist en Redis}: tokens invalidados por logout se almacenan hasta su expiración
+    \item \textbf{CORS}: configurado en API Gateway para el dominio del frontend
+    \item \textbf{Validación de entrada}: DTOs con class-validator en todos los endpoints
+    \item \textbf{Transacciones SQL}: integridad en operaciones críticas sobre ap\_Aseguramientos y ap\_circuitos
 \end{itemize}
+
+Al ser una aplicación web, garantiza interoperabilidad desde cualquier dispositivo con navegador dentro de la red del Despacho.
+
+\subsection{Ventajas de la Arquitectura de Microservicios}
+Esta arquitectura ofrece:
+
+\begin{itemize}
+    \item \textbf{Escalabilidad independiente}: cada microservicio puede escalar según su carga (circuitos-ms lectura intensiva, rotaciones-ms cálculo intensivo)
+    \item \textbf{Desacoplamiento}: NATS elimina dependencias directas entre servicios
+    \item \textbf{Mantenibilidad}: cada servicio posee un área de responsabilidad claramente definida
+    \item \textbf{Resiliencia}: fallos en un servicio no colapsan el sistema completo
+    \item \textbf{Tecnología heterogénea}: cada servicio puede elegir su esquema de base de datos (SQL Server, PostgreSQL, Redis)
+\end{itemize}
+
 La solución reduce el tiempo de respuesta de 45 minutos a segundos, elimina errores manuales y aprovecha plenamente los datos legacy.
 
 % ------------------------------------------------------------------
@@ -101,16 +171,17 @@ La Tabla~\ref{tab:objetivos_rendimiento} sintetiza los objetivos de rendimiento 
 \begin{tabular}{|l|c|c|}
 \hline
 \textbf{Parámetro} & \textbf{Estado Actual} & \textbf{Objetivo} \\ \hline
-Tiempo de respuesta & 30--45 minutos & $<$ 5 minutos (superado a 2-3 s) \\ \hline
-Precisión en cálculos & 90--95\% & 100\% \\ \hline
-Consistencia operativa & Baja (Manual) & Alta (Algorítmica) \\ \hline
-Capacidad de simulación & Nula & Completa (Escenarios) \\ \hline
-Disponibilidad de datos & Dispersa & Centralizada (API) \\ \hline
+Tiempo de respuesta API & 2--3 segundos & $<$ 5 minutos (superado) \\ \hline
+Tiempo de generación de rotación & 2--3 s & $<$ 5 s (superado) \\ \hline
+Precisión en cálculos & 100\% & 100\% \\ \hline
+Disponibilidad del servicio & 99.5\% (goal) & $\geq$ 99.5\% \\ \hline
+Latencia NATS inter-servicio & $<$ 100 ms & $<$ 200 ms \\ \hline
+\hline
 \end{tabular}
 \end{table}
 
 \subsection{Requisitos funcionales y su organización en historias de usuario}
-Se identificaron 45 funcionalidades, que se agruparon en 11 historias de usuario (ver Anexo A). La Tabla~\ref{tab:hu_coverage} muestra la correspondencia entre módulos y las historias que los cubren.
+Se identificaron funcionalidades distribuidas en 4 módulos operativos principales, documentadas mediante historias de usuario. La Tabla~\ref{tab:hu_coverage} muestra la correspondencia entre módulos y las historias que los cubren.
 
 \begin{table}[H]
 \centering
@@ -119,21 +190,29 @@ Se identificaron 45 funcionalidades, que se agruparon en 11 historias de usuario
 \begin{tabular}{|l|c|l|}
 \hline
 \textbf{Módulo} & \textbf{Número de funcionalidades} & \textbf{HU asociadas} \\ \hline
-Seguridad y usuarios & 8 & HU1, HU2, HU3 \\ \hline
-Gestión de circuitos y aseguramientos & 12 & HU4, HU5 \\ \hline
-Rotación y algoritmos & 15 & HU6, HU7, HU8 \\ \hline
-Reportes y monitoreo & 10 & HU9, HU10, HU11 \\ \hline
+Seguridad y autenticación & 8 & HU1, HU2, HU3 \\ \hline
+Gestión de circuitos & 12 & HU4, HU5 \\ \hline
+Gestión de aseguramientos & 10 & HU6, HU7 \\ \hline
+Algoritmo de rotación & 15 & HU8, HU9, HU10 \\ \hline
+Monitoreo y apagones & 8 & HU11 \\ \hline
 \end{tabular}
 \end{table}
 
 La documentación de requisitos siguió las prácticas de XP, con historias de usuario que describen cada funcionalidad desde la perspectiva del operador. A continuación se resumen los módulos:
 
 \begin{itemize}
-    \item \textbf{Módulo de Seguridad y Usuarios}: acceso restringido con credenciales, gestión de roles (Administrador/Operador), sesión segura mediante JWT. Cubierto por HU1, HU2, HU3.
-    \item \textbf{Módulo de Gestión de Circuitos y Aseguramientos}: sincronización con SIGERE y PSFV, clasificación automática de circuitos, gestión de circuitos críticos ("asegurados"). Cubierto por HU4, HU5.
-    \item \textbf{Módulo de Rotación y Algoritmos}: cálculo automático del déficit, generación de propuestas por prioridad de bloques, validación de restricciones del DNC, ajustes manuales. Cubierto por HU6, HU7, HU8.
-    \item \textbf{Módulo de Reportes y Monitoreo}: exportación de órdenes a PDF/Excel, dashboard interactivo con alertas visuales y estadísticas históricas. Cubierto por HU9, HU10, HU11.
+    \item \textbf{Módulo de Seguridad y Autenticación}: acceso restringido con credenciales, gestión de roles (Administrador/Operador), sesión segura mediante JWT con refresh tokens y blacklist en Redis. Cubierto por HU1, HU2, HU3.
+    
+    \item \textbf{Módulo de Gestión de Circuitos}: sincronización con SIGERE y PSFV, clasificación automática de circuitos por bloque y estado (apagable/apagado/encendido), consulta con consumo y último apagón registrado. Cubierto por HU4, HU5.
+    
+    \item \textbf{Módulo de Gestión de Aseguramientos}: CRUD de aseguramientos (circuitos protegidos), consulta por fecha, persistencia en SQL Server. Cubierto por HU6, HU7.
+    
+    \item \textbf{Módulo de Algoritmo de Rotación}: cálculo automático del déficit, generación de propuestas por prioridad de bloques con opción de encendido FIFO, validación de restricciones (circuitos protegidos), retorno de listas de circuitos apagados/encendidos/mantenidos. Cubierto por HU8, HU9, HU10.
+    
+    \item \textbf{Módulo de Monitoreo y Apagones}: visualización del historial de apagones por circuito, dashboard con métricas en tiempo real (MW por bloque, circuitos apagables, aseguramientos activos). Cubierto por HU11.
 \end{itemize}
+
+\textbf{Nota:} El módulo de Reportes (HU9-HU11 en versiones previas) se integró en el módulo de Monitoreo, proporcionando visualización en tiempo real y exportación local (PDF/Excel) desde el frontend. El historial de rotaciones generadas se obtiene de la sesión activa; la persistencia a largo plazo está pendiente para una fase posterior.
 
 \subsection{Requisitos no funcionales}
 La Tabla~\ref{tab:requisitos_no_funcionales} resume los requisitos no funcionales que garantizan calidad y sostenibilidad.
@@ -145,13 +224,16 @@ La Tabla~\ref{tab:requisitos_no_funcionales} resume los requisitos no funcionale
 \begin{tabular}{|l|l|}
 \hline
 \textbf{Categoría} & \textbf{Especificación} \\ \hline
-Rendimiento & Tiempo de respuesta de la API $<$ 2 segundos \\ \hline
-Seguridad & Autenticación mediante JWT (JSON Web Tokens) \\ \hline
+Rendimiento API & Tiempo de respuesta $<$ 2 segundos (promedio 2-3 s) \\ \hline
+Rendimiento algoritmo & Generación de rotación $<$ 3 segundos \\ \hline
+Seguridad & Autenticación JWT + refresh tokens, blacklist en Redis \\ \hline
 Disponibilidad & Uptime del servicio $\geq$ 99.5\% \\ \hline
-Usabilidad & Interfaz \textit{Responsive} (Tailwind CSS) \\ \hline
-Interoperabilidad & Conexión con SQL Server 2008 legacy \\ \hline
-Mantenibilidad & Arquitectura cliente-servidor desacoplada \\ \hline
+Usabilidad & Interfaz \textit{Responsive} (Tailwind CSS v4, Next.js App Router) \\ \hline
+Interoperabilidad & Conexión con SQL Server 2008 legacy, PostgreSQL, Redis \\ \hline
+Mantenibilidad & Arquitectura de microservicios desacoplados (NestJS + NATS) \\ \hline
 Escalabilidad & Capacidad para gestionar 500+ circuitos en tiempo real \\ \hline
+Transaccionalidad & Integridad en consultas SQL Server via stored procedures \\ \hline
+\hline
 \end{tabular}
 \end{table}
 
@@ -161,11 +243,11 @@ La transición a una arquitectura web permite cumplir con criterios de mantenibi
 \section{Conclusiones del capítulo}
 
 \begin{enumerate}
-    \item La selección tecnológica basada en Next.js, NestJS y SQL Server 2008 respondió a los criterios de arquitectura cliente-servidor para accesibilidad multiusuario, compatibilidad con la infraestructura legacy existente y adecuación a los requerimientos de alta disponibilidad del DNC. Se discute explícitamente la obsolescencia de SQL Server 2008 como una limitación asumida, dejando abierta la recomendación de migración futura.
+    \item La selección tecnológica basada en Next.js 16 (App Router), microservicios NestJS (api-gateway, circuitos-ms, rotaciones-ms, auth-ms), comunicación via NATS y bases de datos heterogéneas (SQL Server 2008, PostgreSQL, Redis) respondió a los criterios de arquitectura de microservicios para escalabilidad independiente, desacoplamiento total mediante broker de mensajes, compatibilidad con la infraestructura legacy existente y adecuación a los requerimientos de alta disponibilidad del DNC. Se discute explícitamente la obsolescencia de SQL Server 2008 como una limitación asumida, dejando abierta la recomendación de migración futura.
     
-    \item La arquitectura desacoplada separa claramente la capa de presentación, la lógica de negocio y el acceso a datos, garantizando escalabilidad, mantenibilidad y despliegue centralizado. El flujo de operación definido reduce drásticamente los tiempos de respuesta y elimina errores humanos.
+    \item La arquitectura de microservicios desacoplada separa claramente la capa de presentación, la puerta de enlace HTTP, los servicios especializados y las bases de datos. El flujo de operación definido (Frontend $\rightarrow$ API Gateway $\rightarrow$ NATS $\rightarrow$ Microservicio $\rightarrow$ Base de datos) reduce drásticamente los tiempos de respuesta (2-3 s) y elimina errores humanos.
     
-    \item La ingeniería de requisitos permitió formalizar 45 funcionalidades organizadas en cuatro módulos lógicos, documentadas mediante 11 historias de usuario. Los objetivos de rendimiento (respuesta <5 min) fueron superados (2-3 s), como se validará en el Capítulo III.
+    \item La ingeniería de requisitos permitió formalizar las funcionalidades organizadas en cinco módulos lógicos: Seguridad/Autenticación, Circuitos, Aseguramientos, Algoritmo de Rotación y Monitoreo/Apagones. Los objetivos de rendimiento (respuesta $<$ 5 min) fueron superados (2-3 s), como se validará en el Capítulo III.
     
     \item La integración de los fundamentos tecnológicos, la descripción de la solución y la ingeniería de requisitos proporciona una base sólida para la implementación y validación de la plataforma, asegurando coherencia con el problema científico.
 \end{enumerate}
