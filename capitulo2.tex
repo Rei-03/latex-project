@@ -56,14 +56,9 @@ El código se organiza en un \textbf{monorepo} gestionado por \textbf{Turborepo}
 
 La plataforma web automatizada integra y procesa información dispersa en múltiples fuentes~\citep{villalba2021}, generando órdenes optimizadas de rotación de circuitos ante déficit de generación~\citep{gomez2016}. El sistema implementa una \textbf{arquitectura de microservicios} organizada en tres capas lógicas: frontend (Next.js), API Gateway (NestJS) y microservicios especializados (NestJS + NATS).
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.82\textwidth]{img/arquitectura_sistema.png}
-\caption{Arquitectura del sistema automatizado de rotación de circuitos (Next.js - Microservicios NestJS + NATS)}
-\label{fig:arquitectura_sistema}
-\end{figure}
 
-Como se ilustra en la Figura~\ref{fig:arquitectura_sistema}, el sistema organiza los componentes en los siguientes bloques:
+
+El sistema organiza los componentes en los siguientes bloques:
 
 \subsection{Capa de Presentación (Frontend: Next.js 16/React 19)}
 La interfaz de usuario se desarrolló como una aplicación web moderna utilizando \textbf{Next.js 16} con App Router y \textbf{React 19}. Permite visualizar el déficit en tiempo real mediante componentes reactivos, supervisar propuestas automatizadas en tablas dinámicas y gestionar excepciones operativas (circuitos asegurados). El estado global de autenticación se gestiona mediante \textbf{Context API}, asegurando sincronización de datos entre vistas sin recargar la página. La aplicación consume exclusivamente la API REST expuesta por el \textbf{api-gateway} (puerto 3001) mediante \textbf{Axios} con interceptores que adjuntan automáticamente el token JWT. Las llamadas siguen el patrón de respuesta \texttt{\{success, data, [error], timestamp\}}.
