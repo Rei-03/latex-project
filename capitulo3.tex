@@ -57,11 +57,12 @@ Además de las pruebas de integración, se implementaron pruebas unitarias para 
 
 A continuación se muestra un fragmento representativo de la prueba correspondiente al contexto de autenticación:
 
-\begin{center}
+\begin{figure}[H]
+\centering
 \includegraphics[width=0.8\textwidth]{img/auth_context.png}
-\captionof{figure}{Prueba de login en AuthContext}
+\caption{Prueba de login en AuthContext}
 \label{fig:auth-context-prueba}
-\end{center}
+\end{figure}
 
 La suite completa de pruebas del contexto de autenticación incluyó 15 casos, todos exitosos, cubriendo logout, persistencia en localStorage, validación de roles (\texttt{isAdmin}) y manejo de errores. El resto de las suites de prueba del backend (circuitos, apagones) y del frontend (componentes React, servicios API, utilidades) también superaron el 100\% de las pruebas. La lógica del algoritmo de rotación se validó mediante pruebas de integración con escenarios históricos, asegurando su correcto funcionamiento en condiciones reales.
 

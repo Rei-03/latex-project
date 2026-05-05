@@ -7,37 +7,37 @@
 \contentsline {table}{\numberline {2.2}{\ignorespaces Cobertura de funcionalidades por historias de usuario}}{21}{table.caption.17}%
 \contentsline {table}{\numberline {2.3}{\ignorespaces Requisitos no funcionales del sistema (RNF)}}{22}{table.caption.18}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Caso de prueba inicial No Satisfactorio (NC-01)}}{30}{table.caption.19}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Comparación cuantitativa entre proceso manual y sistema web automatizado}}{31}{table.caption.20}%
-\contentsline {table}{\numberline {3.3}{\ignorespaces Historia de Usuario No.1}}{39}{table.caption.29}%
-\contentsline {table}{\numberline {3.4}{\ignorespaces Historia de Usuario No.2}}{40}{table.caption.30}%
-\contentsline {table}{\numberline {3.5}{\ignorespaces Historia de Usuario No.3}}{40}{table.caption.31}%
-\contentsline {table}{\numberline {3.6}{\ignorespaces Historia de Usuario No.4}}{41}{table.caption.32}%
-\contentsline {table}{\numberline {3.7}{\ignorespaces Historia de Usuario No.5}}{42}{table.caption.33}%
-\contentsline {table}{\numberline {3.8}{\ignorespaces Historia de Usuario No.6}}{42}{table.caption.34}%
-\contentsline {table}{\numberline {3.9}{\ignorespaces Historia de Usuario No.7}}{43}{table.caption.35}%
-\contentsline {table}{\numberline {3.10}{\ignorespaces Historia de Usuario No.8}}{44}{table.caption.36}%
-\contentsline {table}{\numberline {3.11}{\ignorespaces Historia de Usuario No.9}}{44}{table.caption.37}%
-\contentsline {table}{\numberline {3.12}{\ignorespaces Historia de Usuario No.10}}{45}{table.caption.38}%
-\contentsline {table}{\numberline {3.13}{\ignorespaces Historia de Usuario No.11}}{45}{table.caption.39}%
-\contentsline {table}{\numberline {3.14}{\ignorespaces Tarjeta CRC: Usuario}}{46}{table.caption.40}%
-\contentsline {table}{\numberline {3.15}{\ignorespaces Tarjeta CRC: Rol}}{46}{table.caption.41}%
-\contentsline {table}{\numberline {3.16}{\ignorespaces Tarjeta CRC: Circuito}}{46}{table.caption.42}%
-\contentsline {table}{\numberline {3.17}{\ignorespaces Tarjeta CRC: Bloque}}{46}{table.caption.43}%
-\contentsline {table}{\numberline {3.18}{\ignorespaces Tarjeta CRC: Aseguramiento}}{47}{table.caption.44}%
-\contentsline {table}{\numberline {3.19}{\ignorespaces Tarjeta CRC: OrdenRotacion}}{47}{table.caption.45}%
-\contentsline {table}{\numberline {3.20}{\ignorespaces Tarjeta CRC: Reporte}}{47}{table.caption.46}%
-\contentsline {table}{\numberline {3.21}{\ignorespaces Tarjeta CRC: Auditoria}}{47}{table.caption.47}%
-\contentsline {table}{\numberline {3.22}{\ignorespaces Plan de iteraciones del proyecto}}{48}{table.caption.48}%
-\contentsline {table}{\numberline {3.23}{\ignorespaces Caso de Prueba CPA-01: Autenticación de usuarios}}{48}{table.caption.49}%
-\contentsline {table}{\numberline {3.24}{\ignorespaces Caso de Prueba CPA-02: Crear usuario}}{49}{table.caption.50}%
-\contentsline {table}{\numberline {3.25}{\ignorespaces Caso de Prueba CPA-03: Eliminar usuario}}{49}{table.caption.51}%
-\contentsline {table}{\numberline {3.26}{\ignorespaces Caso de Prueba CPA-04: Visualización de circuitos}}{50}{table.caption.52}%
-\contentsline {table}{\numberline {3.27}{\ignorespaces Caso de Prueba CPA-05: Cálculo del déficit}}{50}{table.caption.53}%
-\contentsline {table}{\numberline {3.28}{\ignorespaces Caso de Prueba CPA-06: Generación de propuesta}}{51}{table.caption.54}%
-\contentsline {table}{\numberline {3.29}{\ignorespaces Caso de Prueba CPA-07: Ajuste manual de propuesta}}{51}{table.caption.55}%
-\contentsline {table}{\numberline {3.30}{\ignorespaces Caso de Prueba CPA-08: Dashboard de monitoreo}}{52}{table.caption.56}%
-\contentsline {table}{\numberline {3.31}{\ignorespaces Caso de Prueba CPA-09: Exportar orden a PDF}}{52}{table.caption.57}%
-\contentsline {table}{\numberline {3.32}{\ignorespaces Instrumento de evaluación de usabilidad}}{53}{table.caption.58}%
-\contentsline {table}{\numberline {3.33}{\ignorespaces Correspondencia funcionalidades – historias de usuario}}{54}{table.caption.59}%
-\contentsline {table}{\numberline {3.34}{\ignorespaces Desglose de puntos por historia de usuario}}{54}{table.caption.60}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Caso de prueba inicial No Satisfactorio (NC-01)}}{30}{table.caption.20}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Comparación cuantitativa entre proceso manual y sistema web automatizado}}{31}{table.caption.21}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Historia de Usuario No.1}}{39}{table.caption.30}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Historia de Usuario No.2}}{40}{table.caption.31}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Historia de Usuario No.3}}{40}{table.caption.32}%
+\contentsline {table}{\numberline {3.6}{\ignorespaces Historia de Usuario No.4}}{41}{table.caption.33}%
+\contentsline {table}{\numberline {3.7}{\ignorespaces Historia de Usuario No.5}}{42}{table.caption.34}%
+\contentsline {table}{\numberline {3.8}{\ignorespaces Historia de Usuario No.6}}{42}{table.caption.35}%
+\contentsline {table}{\numberline {3.9}{\ignorespaces Historia de Usuario No.7}}{43}{table.caption.36}%
+\contentsline {table}{\numberline {3.10}{\ignorespaces Historia de Usuario No.8}}{44}{table.caption.37}%
+\contentsline {table}{\numberline {3.11}{\ignorespaces Historia de Usuario No.9}}{44}{table.caption.38}%
+\contentsline {table}{\numberline {3.12}{\ignorespaces Historia de Usuario No.10}}{45}{table.caption.39}%
+\contentsline {table}{\numberline {3.13}{\ignorespaces Historia de Usuario No.11}}{45}{table.caption.40}%
+\contentsline {table}{\numberline {3.14}{\ignorespaces Tarjeta CRC: Usuario}}{46}{table.caption.41}%
+\contentsline {table}{\numberline {3.15}{\ignorespaces Tarjeta CRC: Rol}}{46}{table.caption.42}%
+\contentsline {table}{\numberline {3.16}{\ignorespaces Tarjeta CRC: Circuito}}{46}{table.caption.43}%
+\contentsline {table}{\numberline {3.17}{\ignorespaces Tarjeta CRC: Bloque}}{46}{table.caption.44}%
+\contentsline {table}{\numberline {3.18}{\ignorespaces Tarjeta CRC: Aseguramiento}}{47}{table.caption.45}%
+\contentsline {table}{\numberline {3.19}{\ignorespaces Tarjeta CRC: OrdenRotacion}}{47}{table.caption.46}%
+\contentsline {table}{\numberline {3.20}{\ignorespaces Tarjeta CRC: Reporte}}{47}{table.caption.47}%
+\contentsline {table}{\numberline {3.21}{\ignorespaces Tarjeta CRC: Auditoria}}{47}{table.caption.48}%
+\contentsline {table}{\numberline {3.22}{\ignorespaces Plan de iteraciones del proyecto}}{48}{table.caption.49}%
+\contentsline {table}{\numberline {3.23}{\ignorespaces Caso de Prueba CPA-01: Autenticación de usuarios}}{48}{table.caption.50}%
+\contentsline {table}{\numberline {3.24}{\ignorespaces Caso de Prueba CPA-02: Crear usuario}}{49}{table.caption.51}%
+\contentsline {table}{\numberline {3.25}{\ignorespaces Caso de Prueba CPA-03: Eliminar usuario}}{49}{table.caption.52}%
+\contentsline {table}{\numberline {3.26}{\ignorespaces Caso de Prueba CPA-04: Visualización de circuitos}}{50}{table.caption.53}%
+\contentsline {table}{\numberline {3.27}{\ignorespaces Caso de Prueba CPA-05: Cálculo del déficit}}{50}{table.caption.54}%
+\contentsline {table}{\numberline {3.28}{\ignorespaces Caso de Prueba CPA-06: Generación de propuesta}}{51}{table.caption.55}%
+\contentsline {table}{\numberline {3.29}{\ignorespaces Caso de Prueba CPA-07: Ajuste manual de propuesta}}{51}{table.caption.56}%
+\contentsline {table}{\numberline {3.30}{\ignorespaces Caso de Prueba CPA-08: Dashboard de monitoreo}}{52}{table.caption.57}%
+\contentsline {table}{\numberline {3.31}{\ignorespaces Caso de Prueba CPA-09: Exportar orden a PDF}}{52}{table.caption.58}%
+\contentsline {table}{\numberline {3.32}{\ignorespaces Instrumento de evaluación de usabilidad}}{53}{table.caption.59}%
+\contentsline {table}{\numberline {3.33}{\ignorespaces Correspondencia funcionalidades – historias de usuario}}{54}{table.caption.60}%
+\contentsline {table}{\numberline {3.34}{\ignorespaces Desglose de puntos por historia de usuario}}{54}{table.caption.61}%
